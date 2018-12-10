@@ -291,43 +291,45 @@ def main():
     print('#======================================================================')
     print('\n\n')
 
-    #running circuitry on the consensus system
-    #creates a sbatch bash script
-    crc_folder = '%scrc_atac/' % (projectFolder)
+    # #running circuitry on the consensus system
+    # #creates a sbatch bash script
+    # crc_folder = '%scrc_atac/' % (projectFolder)
 
-    #for young
-    analysis_name = 'keratinocyte_young'
-    enhancer_path = '%smeta_rose/young_h3k27ac/young_h3k27ac_SuperEnhancers_ENHANCER_TO_GENE.txt' % (projectFolder)
-    subpeak_path = '%sbeds/HG19_young_atac_-0_+0.bed' % (projectFolder)
-    activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
+    # #for young
+    # analysis_name = 'keratinocyte_young'
+    # enhancer_path = '%smeta_rose/young_h3k27ac/young_h3k27ac_SuperEnhancers_ENHANCER_TO_GENE.txt' % (projectFolder)
+    # subpeak_path = '%sbeds/HG19_young_atac_-0_+0.bed' % (projectFolder)
+    # activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
 
-    call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
-
-
-    #for old
-    analysis_name = 'keratinocyte_old'
-    enhancer_path = '%smeta_rose/old_h3k27ac/old_h3k27ac_SuperEnhancers_ENHANCER_TO_GENE.txt' % (projectFolder)
-    subpeak_path = '%sbeds/HG19_old_atac_-0_+0.bed' % (projectFolder)
-    activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
-
-    call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
-
-    #for combined se
-    analysis_name = 'keratinocyte_combined'
-    enhancer_path = '%sclustering/keratinocyte_se_clustering/HG19_keratinocyte_se_clusterTable_ENHANCER_TO_GENE.txt' % (projectFolder)
-    subpeak_path = '%sbeds/HG19_combined_atac_-0_+0.bed' % (projectFolder)
-    activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
-
-    call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
+    # call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
 
 
-    #for combined all enhancers
-    analysis_name = 'keratinocyte_combined_all'
-    enhancer_path = '%sclustering/keratinocyte_all_clustering/HG19_keratinocyte_all_clusterTable_ENHANCER_TO_GENE.txt' % (projectFolder)
-    subpeak_path = '%sbeds/HG19_combined_atac_-0_+0.bed' % (projectFolder)
-    activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
+    # #for old
+    # analysis_name = 'keratinocyte_old'
+    # enhancer_path = '%smeta_rose/old_h3k27ac/old_h3k27ac_SuperEnhancers_ENHANCER_TO_GENE.txt' % (projectFolder)
+    # subpeak_path = '%sbeds/HG19_old_atac_-0_+0.bed' % (projectFolder)
+    # activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
 
-    call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
+    # call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
+
+    # #for combined se
+    # analysis_name = 'keratinocyte_combined'
+    # enhancer_path = '%sclustering/keratinocyte_se_clustering/HG19_keratinocyte_se_clusterTable_ENHANCER_TO_GENE.txt' % (projectFolder)
+    # subpeak_path = '%sbeds/HG19_combined_atac_-0_+0.bed' % (projectFolder)
+    # activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
+
+    # call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
+
+
+    # #for combined all enhancers
+    # analysis_name = 'keratinocyte_combined_all'
+    # enhancer_path = '%sclustering/keratinocyte_all_clustering/HG19_keratinocyte_all_clusterTable_ENHANCER_TO_GENE.txt' % (projectFolder)
+    # subpeak_path = '%sbeds/HG19_combined_atac_-0_+0.bed' % (projectFolder)
+    # activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
+
+    # call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
+
+
 
     print('\n\n')
     print('#======================================================================')
@@ -361,7 +363,125 @@ def main():
 
     print('\n\n')
     print('#======================================================================')
-    print('#========================VII. TF COR HEATMAPS==========================')
+    print('#========================VIII. CONNECTIVITY OF STRING TFS==============')
+    print('#======================================================================')
+    print('\n\n')
+
+    
+    #using the signal filtered edge table to identify connectivity between string TFs
+
+    def makeDegreeTable(edge_signal_path,string_clustering_path,normalize=True,output=''):
+
+        '''
+        takes in the edge signal path, a list of TFs, if normalize then normalize to max
+        possible degree (bounded 0 to 1 where 1 is all TFs)
+        also annotate the cluster for each
+        '''
+        #get the string TFs
+
+        string_table = utils.parseTable(string_clustering_path,'\t')
+        string_tfs = utils.uniquify([line[4] for line in string_table[1:]])
+
+        tf_cluster_dict = {}
+        for line in string_table[1:]:
+            tf_cluster_dict[line[4]] = [line[1],line[2]]
+        print('identified %s string tfs with interactions' % (len(string_tfs)))
+        
+        #now load in the edge table
+        edge_signal_table = utils.parseTable(edge_signal_path,'\t')
+
+        edge_dict = defaultdict(list)
+        all_tfs = []
+        for line in edge_signal_table[1:]:
+            [source,target] = line[0].split('_')
+            all_tfs.append(source)
+
+        all_tfs = utils.uniquify(all_tfs)
+        for line in edge_signal_table[1:]:
+            [source,target] = line[0].split('_')
+            if all_tfs.count(source) > 0:
+                if all_tfs.count(target) > 0:
+                    edge_dict[source].append(target)
+
+
+
+        non_string_tfs = [tf_name for tf_name in all_tfs if string_tfs.count(tf_name) ==0]
+
+        #counting only unique edges
+        for tf in all_tfs:
+            edge_dict[tf] = utils.uniquify(edge_dict[tf])
+
+         
+        all_out_edges = []
+        for tf in all_tfs:
+            all_out_edges+= edge_dict[tf]
+
+
+        degree_table = [['TF','CLUSTER','COLOR','IN_DEGREE','OUT_DEGREE','CLUSTER_IN_DEGREE','OUTGROUP_IN_DEGREE','CLUSTER_OUT_DEGREE','OUTGROUP_OUT_DEGREE']]
+        for tf in string_tfs + non_string_tfs:
+            
+            out_degree = len(edge_dict[tf])
+            in_degree = all_out_edges.count(tf)
+
+            #now figure out which TFs are in the same cluster
+            if tf_cluster_dict.keys().count(tf) > 0:
+                cluster_tfs = [tf_i for tf_i in tf_cluster_dict.keys() if tf_cluster_dict[tf_i] == tf_cluster_dict[tf]]
+                outgroup_tfs = [tf_j for tf_j in all_tfs if cluster_tfs.count(tf_j) == 0]
+                cluster_out_degree = len([tf_k for tf_k in edge_dict[tf] if cluster_tfs.count(tf_k) >0])
+                outgroup_out_degree = len([tf_l for tf_l in edge_dict[tf] if outgroup_tfs.count(tf_l) >0])
+
+                all_cluster_out_edges = []
+                for tf_m in cluster_tfs:
+                    all_cluster_out_edges+= edge_dict[tf_m]
+                all_outgroup_out_edges = []
+                for tf_n in outgroup_tfs:
+                    all_outgroup_out_edges+= edge_dict[tf_n]
+
+                cluster_in_degree = all_cluster_out_edges.count(tf)
+                outgroup_in_degree = all_outgroup_out_edges.count(tf)
+
+
+            else:
+                
+                cluster_out_degree= 0
+                outgroup_out_degree = 0
+
+                cluster_in_degree= 0
+                outgroup_in_degree = 0
+
+            if normalize:
+                out_degree = round(float(out_degree)/len(all_tfs),2)
+                in_degree = round(float(in_degree)/len(all_tfs),2)
+
+                if string_tfs.count(tf) > 0:
+                    cluster_out_degree = round(float(cluster_out_degree)/len(cluster_tfs),2)
+                    outgroup_out_degree = round(float(outgroup_out_degree)/len(outgroup_tfs),2)
+
+                    cluster_in_degree = round(float(cluster_in_degree)/len(cluster_tfs),2)
+                    outgroup_in_degree = round(float(outgroup_in_degree)/len(outgroup_tfs),2)
+            
+            if string_tfs.count(tf) > 0:
+                new_line = [tf] + tf_cluster_dict[tf] + [in_degree,out_degree,cluster_in_degree,outgroup_in_degree,cluster_out_degree,outgroup_out_degree]
+            else:
+                new_line = [tf] + ['7','grey'] + [in_degree,out_degree,cluster_in_degree,outgroup_in_degree,cluster_out_degree,outgroup_out_degree]
+            degree_table.append(new_line)        
+        if len(output) >0:
+            utils.unParseTable(degree_table,output,'\t')
+            return(output)
+        else:
+            return(degree_table)
+        
+
+    #get the string TFs
+    edge_signal_path = '%scrc_atac/keratinocyte_combined_all/keratinocyte_combined_all_EDGE_TABLE_signal_filtered.txt' % (projectFolder)
+    string_clustering_path = '%sstring/string_MCL_clusters.tsv' % (projectFolder)
+    degree_table_path = '%scrc_atac/keratinocyte_combined_all/keratinocyte_combined_all_DEGREE_TABLE_STRING_TF_signal_filtered.txt' % (projectFolder)
+    degree_table_path = makeDegreeTable(edge_signal_path,string_clustering_path,normalize=True,output=degree_table_path)
+
+
+    print('\n\n')
+    print('#======================================================================')
+    print('#========================IX. TF COR HEATMAPS===========================')
     print('#======================================================================')
     print('\n\n')
 
@@ -370,21 +490,40 @@ def main():
     degree_path = '%s%s_DEGREE_TABLE.txt' % (crc_folder,analysis_name)
 
     degree_table = utils.parseTable(degree_path,'\t')
-    print(degree_table)
+
 
     max_total_degree = max([int(line[-1]) for line in degree_table[1:]])
+
     print(max_total_degree)
 
     cutoff= 0.75
     top_tfs = [line[0] for line in degree_table[1:] if float(line[-1])/max_total_degree > cutoff]
     top_tfs.sort()
-    print(top_tfs)
-    # top_tf_table = [[tf] for tf in top_tfs]
-    # top_tf_path ='%smotif_beds/tables/top_tf_list.txt' % (crc_folder)
-    # utils.unParseTable(top_tf_table,top_tf_path,'\t')
-    # print(top_tf_path)
+    #print(top_tfs)
+    print('identified %s top tfs with total degree > %s' % (len(top_tfs),cutoff))
 
-    # pipeline_dfci.plotCRCCorrMaps('top_tfs','/storage/cylin/home/cl6/projects/NIBR_YvsO_cyl/crc_atac/keratinocyte_combined_all/motif_beds/',tf_list_path=top_tf_path,window=50)
+    top_tf_table = [[tf] for tf in top_tfs]
+    top_tf_path ='%smotif_beds/tables/top_tf_list.txt' % (crc_folder)
+    utils.unParseTable(top_tf_table,top_tf_path,'\t')
+    print(top_tf_path)
+
+    #now do an additional filtering with string
+    string_interaction_path = '%sstring/string_interactions.tsv' % (projectFolder)
+    string_table = utils.parseTable(string_interaction_path,'\t')
+    string_tfs = utils.uniquify([line[0] for line in string_table[1:]] + [line[1] for line in string_table[1:]])
+    print('identified %s string tfs with interactions' % (len(string_tfs)))
+
+    string_tf_table = [[tf] for tf in string_tfs]
+    string_tf_path ='%smotif_beds/tables/string_tf_list.txt' % (crc_folder)
+    utils.unParseTable(string_tf_table,string_tf_path,'\t')
+    print(string_tf_path)
+
+
+    for top tfs
+    pipeline_dfci.plotCRCCorrMaps('top_tfs','/storage/cylin/home/cl6/projects/NIBR_YvsO_cyl/crc_atac/keratinocyte_combined_all/motif_beds/',tf_list_path=top_tf_path,window=50)
+
+    for string tfs
+    pipeline_dfci.plotCRCCorrMaps('string_tfs','/storage/cylin/home/cl6/projects/NIBR_YvsO_cyl/crc_atac/keratinocyte_combined_all/motif_beds/',tf_list_path=string_tf_path,window=50)
 
 
 
@@ -396,7 +535,7 @@ def main():
     in_table = utils.parseTable(in_path,'\t')
     
     
-
+    #for top tfs
     tf_list = [x[0] for x in in_table[1:] if [y[0] for y in out_table[1:]].count(x[0]) >0]
     tf_list = [tf for tf in tf_list if top_tfs.count(tf) >0]
     print(tf_list)
@@ -417,11 +556,71 @@ def main():
     utils.unParseTable(in_out_table,in_out_path,'\t')
 
 
+    # for string tfs
+    tf_list = [x[0] for x in in_table[1:] if [y[0] for y in out_table[1:]].count(x[0]) >0]
+    tf_list = [tf for tf in tf_list if string_tfs.count(tf) >0]
+    print(tf_list)
+    print(len(tf_list))
+
+    in_out_table = [['TF_NAME','IN_DELTA','OUT_DELTA','OUT_SEM']]
+    for tf_name in tf_list:
+        in_row = [line[0] for line in in_table].index(tf_name)
+        out_row = [line[0] for line in out_table].index(tf_name)
+
+        in_delta = in_table[in_row][3]
+        out_delta = out_table[out_row][2]
+        out_sem = out_table[out_row][5]
+        in_out_table.append([tf_name,in_delta,out_delta,out_sem])
+    
+    in_out_path = '%s%s_IN_OUT_DELTA_STRING_TF.txt' % (crc_folder,analysis_name)
+    print(in_out_path)
+    utils.unParseTable(in_out_table,in_out_path,'\t')
 
 
+    print('\n\n')
+    print('#======================================================================')
+    print('#=========================X. TF TARGET GENES===========================')
+    print('#======================================================================')
+    print('\n\n')
 
 
+    #use the filtered signal table from tf_edge_brd4_delta_out function
 
+    def get_tf_target_genes(tf_name,filtered_signal_path,cut_off = 0.5,output=''):
+    
+        '''
+        looks for target genes with at least one edge satisfying the cutoff criteria
+        if positive cutoff given, assume greater than, if negative assume less than
+        '''
+
+        if output == '':
+            output = filtered_signal_path.replace('EDGE_TABLE_signal_filtered.txt','%s_TARGETS_filtered_%s.txt' % (tf_name,cut_off))
+
+        target_table = [['GENE','EDGE','Y_vs_O_BRD4_LOG2']]
+        filtered_signal_table = utils.parseTable(filtered_signal_path,'\t')
+        
+        for line in filtered_signal_table[1:]:
+            source_tf = line[0].split('_')[0]
+            target_tf = line[0].split('_')[-1]
+            
+            if source_tf == tf_name:
+                delta_edge = float(line[-1])
+                if cut_off > 0 and delta_edge > cut_off:
+                    target_table.append([target_tf,line[1],line[-1]])
+                elif cut_off < 0 and delta_edge < cut_off:
+                    target_table.append([target_tf,line[1],line[-1]])
+            
+        utils.unParseTable(target_table,output,'\t')
+        print('For %s identified %s target genes with cutoff of %s' % (tf_name,str(len(target_table)-1), cut_off))
+        print('Writing output to %s' % (output))
+        return output
+
+    
+    # tf_name = 'IRF2'
+    # filtered_signal_path = '%scrc_atac/keratinocyte_combined_all/keratinocyte_combined_all_EDGE_TABLE_signal_filtered.txt' % (projectFolder)
+    # get_tf_target_genes(tf_name,filtered_signal_path,cut_off = -0.5,output='')
+                                                                       
+                                                                
 
 #==========================================================================
 #===================SPECIFIC FUNCTIONS FOR ANALYSIS========================

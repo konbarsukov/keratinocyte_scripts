@@ -202,34 +202,34 @@ def main():
     print('\n\n')
 
     
-    #calls the dynamic enhancer code
-    analysis_name = 'young_old_h3k27ac_se'
-    name_1 = 'young_h3k27ac'
-    name_2 = 'old_h3k27ac'
+    # #calls the dynamic enhancer code
+    # analysis_name = 'young_old_h3k27ac_se'
+    # name_1 = 'young_h3k27ac'
+    # name_2 = 'old_h3k27ac'
     
-    rose_folder_1 = '%smeta_rose/%s/' % (projectFolder,name_1)
-    rose_folder_2 = '%smeta_rose/%s/' % (projectFolder,name_2)
-    rose_string = ','.join([rose_folder_1,rose_folder_2])
+    # rose_folder_1 = '%smeta_rose/%s/' % (projectFolder,name_1)
+    # rose_folder_2 = '%smeta_rose/%s/' % (projectFolder,name_2)
+    # rose_string = ','.join([rose_folder_1,rose_folder_2])
 
-    dynamic_folder = utils.formatFolder('%sdynamic_meta/' % (projectFolder),True)
-    output_folder = utils.formatFolder('%sdynamic_meta/%s/' % (projectFolder,analysis_name),True)
+    # dynamic_folder = utils.formatFolder('%sdynamic_meta/' % (projectFolder),True)
+    # output_folder = utils.formatFolder('%sdynamic_meta/%s/' % (projectFolder,analysis_name),True)
     
-    group_1_string = ','.join(y_k27ac_list)
-    group_2_string = ','.join(o_k27ac_list)
+    # group_1_string = ','.join(y_k27ac_list)
+    # group_2_string = ','.join(o_k27ac_list)
 
-    bash_path = '%s%s.sh' % (dynamic_folder,analysis_name)
+    # bash_path = '%s%s.sh' % (dynamic_folder,analysis_name)
     
-    bash_file = open(bash_path,'w')
+    # bash_file = open(bash_path,'w')
 
-    bash_file.write('#!/usr/bin/bash\n\n')
-    bash_file.write('#SBATCH --mem=32000\n\n')
+    # bash_file.write('#!/usr/bin/bash\n\n')
+    # bash_file.write('#SBATCH --mem=32000\n\n')
 
 
-    dynamic_cmd = '%s %sdynamicEnhancer_meta.py -g %s -d %s -r %s -o %s --group1 %s --group2 %s --name1 %s --name2 %s' % (py27_path, pipeline_dir, genome, chip_dataFile,rose_string,output_folder,group_1_string,group_2_string,name_1,name_2)
+    # dynamic_cmd = '%s %sdynamicEnhancer_meta.py -g %s -d %s -r %s -o %s --group1 %s --group2 %s --name1 %s --name2 %s' % (py27_path, pipeline_dir, genome, chip_dataFile,rose_string,output_folder,group_1_string,group_2_string,name_1,name_2)
     
-    bash_file.write(dynamic_cmd)
+    # bash_file.write(dynamic_cmd)
 
-    bash_file.close()
+    # bash_file.close()
 
 
     print('\n\n')
@@ -375,7 +375,7 @@ def main():
     # print(mapped_path)
 
     # mapped_path = '%sHG19_TSS_ALL_-1000_+1000/HG19_TSS_ALL_-1000_+1000_TSS.txt' % (mappedEnrichedFolder)
-    # exp_path = '%s/cufflinks/NIBR_YvsO_rna_cuffnorm/genes.fpkm_table' % (projectFolder)
+    # exp_path = '%s/cufflinks/NIBR_YvsO_cuffnorm/genes.fpkm_table' % (projectFolder)
     # activity_path = '%sHG19_KERATINOCYTE_ACTIVE.txt' % (geneListFolder)
 
     # makeActiveList(mapped_path,exp_path,annotFile,activity_path)
@@ -490,27 +490,54 @@ def main():
     
     # #plot_keratinocyte_genes(plot_prefix,chip_dataFile,figure_gff_path,bed_string)    
 
-    # #plotting additional genes
-    # bed_string = '%scrc/keratinocyte_combined/keratinocyte_combined_all_subpeak.bed' % (projectFolder)
-    # figure_2_gff = [['chr3','RBP1','RBP1',139232816,139260628,'','-','','RBP1'],
-    #                 ['chr4','SMAD1','SMAD1',146394843,146483973,'','+','','SMAD1'],
-    #                 ['chr4','UBA6','UBA6',68526969,68600569,'','-','','UBA6'],
+
+    print('\n\n')
+    print('#======================================================================')
+    print('#====================IX. PLOTTING FIGURE REGIONS=======================')
+    print('#======================================================================')
+    print('\n\n')
+
+    #plotting additional genes
+
+    figure_2_gff = [['chr3','RBP1','RBP1',139232816,139260628,'','-','','RBP1'],
+                    ['chr4','SMAD1','SMAD1',146394843,146483973,'','+','','SMAD1'],
+                    ['chr4','UBA6','UBA6',68526969,68600569,'','-','','UBA6'],
+                    ['chr15','CLN6','CLN6',68508894,68523908,'','-','','CLN6'],
+                    ['chr3','XPC','XPC',14181835,14222159,'','-','','XPC'],
+                    ['chr11','DCPS','DCPS',126170837,126196119,'','+','','DCPS'],
+                    ['chr5','IRX2','IRX2',2735144,2765154,'','-','','IRX2'],
+                    ['chr8','SNAI2_WIDE','SNAI2_WIDE',49746215,49846374,'','-','','SNAI2_WIDE'],
+                    ['chr8','SNAI2_CLOSE','SNAI2_CLOSE',49826529,49841529,'','-','','SNAI2_CLOSE'],
+                    ['chr12','MMP17','MMP17',132308545,132323642,'','+','','MMP17'],
+                    ['chr15','VPS18','VPS18',41182805,41212811,'','+','','VPS18'],
+                    ['chr4','ZFP42','ZFP42',188914912,188946979,'','+','','ZFP42'],
+                    ['chrX','SAT1','SAT1',23794388,23827662,'','+','','SAT1'],
+                    ['chr6','MAPK13','MAPK13',36096634,36101634,'','+','MAPK13'],
+                ]
+    figure_gff_path = '%sHG19_KERATINOCYTE_FIGURE_2_GENES.gff' % (gffFolder)
+    utils.unParseTable(figure_2_gff,figure_gff_path,'\t')
+
+
+    # bed_list = ['%scrc_atac/keratinocyte_combined_all/motif_beds/IRF2_motifs.bed' % (projectFolder),
+    #             '%scrc_atac/keratinocyte_combined_all/motif_beds/SNAI2_motifs.bed' % (projectFolder),
+    #             '%scrc_atac/keratinocyte_combined_all/keratinocyte_combined_all_all_subpeak.bed' % (projectFolder),
     #             ]
-    # figure_gff_path = '%sHG19_KERATINOCYTE_FIGURE_2_GENES.gff' % (gffFolder)
-    # utils.unParseTable(figure_2_gff,figure_gff_path,'\t')
+    
+    # bed_string = ','.join(bed_list)
     # plot_prefix = 'HG19_KERATINOCYTE_FIGURE_2_GENES'
-    # #plot_keratinocyte_genes(plot_prefix,chip_dataFile,figure_gff_path,bed_string)    
+    # plot_keratinocyte_genes(plot_prefix,chip_dataFile,figure_gff_path,bed_string)    
 
 
-    # #plotting additional genes atac
-    # bed_string = ''
-    # atac_dataFile_riesling = '%sdata_tables/NIBR_ATAC_TABLE_NEW_riesling.txt' % (projectFolder)
-    # figure_2_gff = [['chr3','RBP1','RBP1',139232816,139260628,'','-','','RBP1'],
-    #                 ['chr4','SMAD1','SMAD1',146394843,146483973,'','+','','SMAD1'],
-    #                 ['chr4','UBA6','UBA6',68526969,68600569,'','-','','UBA6'],
+    #plotting additional genes atac
+
+    # bed_list = ['%scrc_atac/keratinocyte_combined_all/motif_beds/IRF2_motifs.bed' % (projectFolder),
+    #             '%scrc_atac/keratinocyte_combined_all/motif_beds/SNAI2_motifs.bed' % (projectFolder),
+    #             '%scrc_atac/keratinocyte_combined_all/keratinocyte_combined_all_all_subpeak.bed' % (projectFolder),
     #             ]
-    # figure_gff_path = '%sHG19_KERATINOCYTE_FIGURE_2_GENES.gff' % (gffFolder)
-    # utils.unParseTable(figure_2_gff,figure_gff_path,'\t')
+    
+    # bed_string = ','.join(bed_list)
+
+    # atac_dataFile_riesling = '%sdata_tables/NIBR_ATAC_TABLE_NEW_riesling.txt' % (projectFolder)
     # plot_prefix = 'HG19_KERATINOCYTE_FIGURE_2_GENES_ATAC'
     # plot_keratinocyte_atac(plot_prefix,atac_dataFile_riesling,figure_gff_path,bed_string)  
     
@@ -521,13 +548,13 @@ def main():
 
     print('\n\n')
     print('#======================================================================')
-    print('#=================IX. RUNNING ENHANCER PROMOTER QUANT FOR ALL==========')
+    print('#==================X. RUNNING ENHANCER PROMOTER QUANT FOR ALL==========')
     print('#======================================================================')
     print('\n\n')
 
-    # #quanitfies BRD4 at individual genes in Y vs O
+    #quanitfies BRD4 at individual genes in Y vs O
 
-    # #first needs a gff of all of the enhancers
+    # first needs a gff of all of the enhancers
     # all_enhancer_path = '%scrc/keratinocyte_combined_all/keratinocyte_combined_all_ENHANCER_TABLE.txt' % (projectFolder)
 
     # all_enhancer_gff = []
@@ -541,15 +568,25 @@ def main():
     # utils.unParseTable(all_enhancer_gff,all_enhancer_gff_path,'\t')
 
 
-    # # #for young
-    # # input_path = '%sHG19_keratinocyte_combined_all_-0_+0.gff' % (gffFolder)
-    # # activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
-    # # analysis_name = 'keratinocyte_combined_all_young'
-    # # y_brd4_list = ['Y_BRD4_1','Y_BRD4_2']
-    # # output_folder = utils.formatFolder('%senhancerPromoter/%s' % (projectFolder,analysis_name),True)
-    # # enhancer_promoter_bash,enhancer_promoter_output = wrap_enhancer_promoter(chip_dataFile,input_path,activity_path,analysis_name,y_brd4_list)
-    # # print(enhancer_promoter_output)
-    # # run_bash(enhancer_promoter_bash,enhancer_promoter_output)
+    # #for young
+    # input_path = '%sHG19_keratinocyte_combined_all_-0_+0.gff' % (gffFolder)
+    # activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
+    # analysis_name = 'keratinocyte_combined_all_young'
+    # y_brd4_list = ['Y_BRD4_1','Y_BRD4_2']
+    # output_folder = utils.formatFolder('%senhancerPromoter/%s' % (projectFolder,analysis_name),True)
+    # enhancer_promoter_bash,enhancer_promoter_output = wrap_enhancer_promoter(chip_dataFile,input_path,activity_path,analysis_name,y_brd4_list)
+    # print(enhancer_promoter_output)
+    # run_bash(enhancer_promoter_bash,enhancer_promoter_output)
+
+    # #for young_h3k27ac
+    # input_path = '%sHG19_keratinocyte_combined_all_-0_+0.gff' % (gffFolder)
+    # activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
+    # analysis_name = 'keratinocyte_combined_all_young_h3k27ac'
+    # y_h3k27ac_list = ['Y_H3K27ac_1','Y_H3K27ac_2','Y_H3K27ac_3']
+    # output_folder = utils.formatFolder('%senhancerPromoter/%s' % (projectFolder,analysis_name),True)
+    # enhancer_promoter_bash,enhancer_promoter_output = wrap_enhancer_promoter(chip_dataFile,input_path,activity_path,analysis_name,y_h3k27ac_list)
+    # print(enhancer_promoter_output)
+    # run_bash(enhancer_promoter_bash,enhancer_promoter_output)
 
 
     # #for old
@@ -562,30 +599,57 @@ def main():
     # run_bash(enhancer_promoter_bash,enhancer_promoter_output)
 
 
+    # #for old h3k27ac
+    # input_path = '%sHG19_keratinocyte_combined_all_-0_+0.gff' % (gffFolder)
+    # activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
+    # analysis_name = 'keratinocyte_combined_all_old_h3k27ac'
+    # o_h3k27ac_list = ['O_H3K27ac_1','O_H3K27ac_2','O_H3K27ac_3']
+    # output_folder = utils.formatFolder('%senhancerPromoter/%s' % (projectFolder,analysis_name),True)
+    # enhancer_promoter_bash,enhancer_promoter_output = wrap_enhancer_promoter(chip_dataFile,input_path,activity_path,analysis_name,o_h3k27ac_list)
+    # run_bash(enhancer_promoter_bash,enhancer_promoter_output)
+
+
 
     print('\n\n')
     print('#======================================================================')
-    print('#===============X. DIFFERENTIAL ENHANCER PROMOTER ANALYSIS=============')
+    print('#===============XI. DIFFERENTIAL ENHANCER PROMOTER ANALYSIS============')
     print('#======================================================================')
     print('\n\n')
 
-    # #create a delta waterfall of the enhancer promoter output between young and old
-    # #takes a pair of enhancer promoter gene tables and calls a simple R script to make a waterfall
+    #create a delta waterfall of the enhancer promoter output between young and old
+    #takes a pair of enhancer promoter gene tables and calls a simple R script to make a waterfall
 
-    # name_1 = 'keratinocyte_combined_all_old'
-    # ep_gene_path_1 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,name_1,name_1)
+    #correlates to changes in expression
+    exp_path = '%scufflinks/NIBR_YvsO_cuffnorm/genes.fpkm_table' % (projectFolder)
 
-    # name_2 = 'keratinocyte_combined_all_young'
-    # ep_gene_path_2 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,name_2,name_2)
+    name_1 = 'keratinocyte_combined_all_old'
+    ep_gene_path_1 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,name_1,name_1)
 
-    # output_path = '%sfigures/%s_%s_enhancer_promoter_gene_delta.pdf' % (projectFolder,name_1,name_2)
+    name_2 = 'keratinocyte_combined_all_young'
+    ep_gene_path_2 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,name_2,name_2)
 
-    # waterfall_script_path = '%sr_scripts/enhancer_promoter_waterfall.R' % (projectFolder)
+    h3k27ac_name_1 = 'keratinocyte_combined_all_old_h3k27ac'
+    h3k27ac_ep_gene_path_1 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,h3k27ac_name_1,h3k27ac_name_1)
+
+    h3k27ac_name_2 = 'keratinocyte_combined_all_young_h3k27ac'
+    h3k27ac_ep_gene_path_2 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,h3k27ac_name_2,h3k27ac_name_2)
+
+    output_path = '%sfigures/%s_%s_enhancer_promoter_gene_delta.pdf' % (projectFolder,name_1,name_2)
+
+    waterfall_script_path = '%sr_scripts/enhancer_promoter_waterfall.R' % (projectFolder)
     
-    # r_cmd = 'Rscript %s %s %s %s %s %s' % (waterfall_script_path,name_1,name_2,ep_gene_path_1,ep_gene_path_2,output_path)
+    waterfall_bash_script = '%sr_scripts/enhancer_promoter_waterfall_run.sh' % (projectFolder)
+    waterfall_bash = open(waterfall_bash_script,'w')
+    
+    waterfall_bash.write('#!/usr/bin/bash\n\n')
+    
+    
+    r_cmd = 'Rscript %s %s %s %s %s %s %s %s %s' % (waterfall_script_path,name_1,name_2,ep_gene_path_1,ep_gene_path_2,h3k27ac_ep_gene_path_1,h3k27ac_ep_gene_path_2,exp_path,output_path)
 
-    # print(r_cmd)
-    # os.system(r_cmd)
+    waterfall_bash.write(r_cmd)
+    waterfall_bash.close()
+    print(r_cmd)
+    #os.system(r_cmd)
 
 
 
@@ -593,9 +657,11 @@ def main():
 
     print('\n\n')
     print('#======================================================================')
-    print('#==================X. DIFFERENTIAL OUT DEGREE ANALYSIS=================')
+    print('#==================XII. DIFFERENTIAL OUT DEGREE ANALYSIS===============')
     print('#======================================================================')
     print('\n\n')
+
+    #this is deprecated see 4_run_crc_atac.py
 
     #two ways to look for circuitry changes between Y and O
     #1 anchor on SE associated TFs, look at all of their assigned subpeaks

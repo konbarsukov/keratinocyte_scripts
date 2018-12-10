@@ -43,14 +43,16 @@ THE SOFTWARE.
 #==========================================================================
 
 
-import sys, os
+
+
+import sys, os, string
 # Get the script's full local path
-whereAmI = os.path.dirname(os.path.realpath(__file__))
+whereAmI = os.path.dirname(os.path.realpath(__file__)) +'/'
+print(whereAmI)
 
-pipeline_dir = '/storage/cylin/home/cl6/pipeline/'
-
-sys.path.append(whereAmI)
+pipeline_dir = '/'.join(whereAmI.split('/')[0:-2]) + '/pipeline/'
 sys.path.append(pipeline_dir)
+print(pipeline_dir)
 
 import pipeline_dfci
 import utils
@@ -94,7 +96,8 @@ tableFolder = '%stables/' % (projectFolder)
 maskFile ='%smasks/hg19_encode_blacklist.bed' % (projectFolder)
 
 #genomeDirectory
-genomeDirectory = '/grail/genomes/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/'
+genomeDirectory = '%s/genomes/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/' % (projectFolder)
+gtfFile = '%s/gtf/genes.gtf' % (projectFolder)
 
 #making folders
 folderList = [gffFolder,macsFolder,macsEnrichedFolder,mappedEnrichedFolder,mappedFolder,wiggleFolder,metaFolder,metaRoseFolder,fastaFolder,figureCodeFolder,figuresFolder,geneListFolder,bedFolder,signalFolder,tableFolder]
@@ -166,6 +169,13 @@ def main():
 
     pipeline_dfci.summary(rna_dataFile)
 
+
+    #if no processed expression present, runs cuffquant/cuffnorm/RNA-seq pipeline
+    cufflinksFolder = utils.formatFolder('%scufflinks' % (projectFolder),True)
+    analysis_name = 'NIBR_YvsO'
+    groupList = [['Y_BC10_Y1','Y_BC11_Y2','Y_BC16_Y3'],['O_BC18_O1','O_BC25_O2','O_BC27_O3']]
+    bashFileName = '%s%s_rna_cufflinks.sh' % (cufflinksFolder,analysis_name)
+    pipeline_dfci.makeCuffTable(rna_dataFile,analysis_name,gtfFile,cufflinksFolder,groupList,bashFileName)
 
 
     print('\n\n')
