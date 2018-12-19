@@ -73,7 +73,7 @@ genome ='hg19'
 annotFile = '%s/annotation/%s_refseq.ucsc' % (pipeline_dir,genome)
 
 #project folders
-projectFolder = '/storage/cylin/grail/projects/%s/' % (projectName) #PATH TO YOUR PROJECT FOLDER
+projectFolder = '/storage/projects/%s/' % (projectName) #PATH TO YOUR PROJECT FOLDER
 
 #standard folder names
 gffFolder ='%sgff/' % (projectFolder)
@@ -115,7 +115,7 @@ py27_path = '/storage/cylin/anaconda3/envs/py27_anaconda/bin/python'
 #some data tables overlap for ease of analysis
 
 #ATAC-Seq
-atac_dataFile = '%sdata_tables/NIBR_ATAC_TABLE_NEW_riesling.txt' % (projectFolder)
+atac_dataFile = '%sdata_tables/NIBR_ATAC_TABLE.txt' % (projectFolder)
 
 #ChIP-Seq
 chip_dataFile = '%sdata_tables/NIBR_CHIP_TABLE.txt' % (projectFolder)
@@ -186,30 +186,30 @@ def main():
     print('#======================================================================')
     print('\n\n')
 
-    #enhancer clustering is run by the 1_map_enhancers.py script
+    ##enhancer clustering is run by the 1_map_enhancers.py script
 
-    analysis_name ='keratinocyte_se'
-    cluster_folder = utils.formatFolder('%sclustering' % (projectFolder),True)
-    output_folder = utils.formatFolder('%s%s_clustering' % (cluster_folder,analysis_name),True)
-    output_path = '%s%s_%s_clusterTable.txt' % (output_folder,genome.upper(),analysis_name)
+    #analysis_name ='keratinocyte_se'
+    #cluster_folder = utils.formatFolder('%sclustering' % (projectFolder),True)
+    #output_folder = utils.formatFolder('%s%s_clustering' % (cluster_folder,analysis_name),True)
+    #output_path = '%s%s_%s_clusterTable.txt' % (output_folder,genome.upper(),analysis_name)
 
-    if utils.checkOutput(output_path,0.1,0.1):
-        print('IDENTIFIED SE CLUSTERING AT %s' % (output_path))
-    else:
-        print('ERROR: NO SE CLUSTERING AT %s' % (output_path))
-        sys.exit()
+    #if utils.checkOutput(output_path,0.1,0.1):
+    #    print('IDENTIFIED SE CLUSTERING AT %s' % (output_path))
+    #else:
+    #    print('ERROR: NO SE CLUSTERING AT %s' % (output_path))
+    #    sys.exit()
 
 
-    analysis_name ='keratinocyte_all'
-    cluster_folder = utils.formatFolder('%sclustering' % (projectFolder),True)
-    output_folder = utils.formatFolder('%s%s_clustering' % (cluster_folder,analysis_name),True)
-    output_path = '%s%s_%s_clusterTable.txt' % (output_folder,genome.upper(),analysis_name)
+    #analysis_name ='keratinocyte_all'
+    #cluster_folder = utils.formatFolder('%sclustering' % (projectFolder),True)
+    #output_folder = utils.formatFolder('%s%s_clustering' % (cluster_folder,analysis_name),True)
+    #output_path = '%s%s_%s_clusterTable.txt' % (output_folder,genome.upper(),analysis_name)
 
-    if utils.checkOutput(output_path,0.1,0.1):
-        print('IDENTIFIED ALL ENHANCER CLUSTERING AT %s' % (output_path))
-    else:
-        print('ERROR: NO ALL ENHANCER CLUSTERING AT %s' % (output_path))
-        sys.exit()
+    #if utils.checkOutput(output_path,0.1,0.1):
+    #    print('IDENTIFIED ALL ENHANCER CLUSTERING AT %s' % (output_path))
+    #else:
+    #    print('ERROR: NO ALL ENHANCER CLUSTERING AT %s' % (output_path))
+    #    sys.exit()
 
 
 
@@ -291,9 +291,9 @@ def main():
     print('#======================================================================')
     print('\n\n')
 
-    # #running circuitry on the consensus system
-    # #creates a sbatch bash script
-    # crc_folder = '%scrc_atac/' % (projectFolder)
+    #running circuitry on the consensus system
+    #creates a sbatch bash script
+    crc_folder = '%scrc_atac/' % (projectFolder)
 
     # #for young
     # analysis_name = 'keratinocyte_young'
@@ -321,7 +321,7 @@ def main():
     # call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
 
 
-    # #for combined all enhancers
+    # #for combined all enhancers with clustering
     # analysis_name = 'keratinocyte_combined_all'
     # enhancer_path = '%sclustering/keratinocyte_all_clustering/HG19_keratinocyte_all_clusterTable_ENHANCER_TO_GENE.txt' % (projectFolder)
     # subpeak_path = '%sbeds/HG19_combined_atac_-0_+0.bed' % (projectFolder)
@@ -329,7 +329,15 @@ def main():
 
     # call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
 
+    
+    #for combined  enhancers
+    analysis_name = 'keratinocyte_combined'
+    enhancer_path = '%smeta_rose/combined_h3k27ac/combined_h3k27ac_AllEnhancers_ENHANCER_TO_GENE.txt' % (projectFolder)
+    subpeak_path = '%sbeds/HG19_combined_atac_-0_+0.bed' % (projectFolder)
+    activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
 
+    call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
+    os.system('bash %scrc_atac/keratinocyte_combined_crc.sh' % (projectFolder))
 
     print('\n\n')
     print('#======================================================================')
@@ -345,9 +353,9 @@ def main():
     # tf_edge_brd4_delta(crc_folder,chip_dataFile,analysis_name,y_brd4_list,o_brd4_list)
 
 
-    crc_folder = '%scrc_atac/keratinocyte_combined_all' % (projectFolder)
-    analysis_name = 'keratinocyte_combined_all'
-    #tf_edge_brd4_delta_out(crc_folder,chip_dataFile,analysis_name,y_brd4_list,o_brd4_list)
+    crc_folder = '%scrc_atac/keratinocyte_combined' % (projectFolder)
+    analysis_name = 'keratinocyte_combined'
+    tf_edge_brd4_delta_out(crc_folder,chip_dataFile,analysis_name,y_brd4_list,o_brd4_list)
     
     print('\n\n')
     print('#======================================================================')
@@ -356,9 +364,9 @@ def main():
     print('\n\n')
 
 
-    crc_folder = '%scrc_atac/keratinocyte_combined_all/' % (projectFolder)
-    analysis_name = 'keratinocyte_combined_all'
-    # tf_edge_brd4_delta_in(crc_folder,chip_dataFile,analysis_name,y_brd4_list,o_brd4_list)
+    crc_folder = '%scrc_atac/keratinocyte_combined' % (projectFolder)
+    analysis_name = 'keratinocyte_combined'
+    tf_edge_brd4_delta_in(crc_folder,chip_dataFile,analysis_name,y_brd4_list,o_brd4_list)
 
 
     print('\n\n')
@@ -473,9 +481,9 @@ def main():
         
 
     #get the string TFs
-    edge_signal_path = '%scrc_atac/keratinocyte_combined_all/keratinocyte_combined_all_EDGE_TABLE_signal_filtered.txt' % (projectFolder)
-    string_clustering_path = '%sstring/string_MCL_clusters.tsv' % (projectFolder)
-    degree_table_path = '%scrc_atac/keratinocyte_combined_all/keratinocyte_combined_all_DEGREE_TABLE_STRING_TF_signal_filtered.txt' % (projectFolder)
+    edge_signal_path = '%scrc_atac/keratinocyte_combined/keratinocyte_combined_EDGE_TABLE_signal_filtered.txt' % (projectFolder)
+    string_clustering_path = '/grail/string/string_MCL_clusters.tsv' % (projectFolder)
+    degree_table_path = '%scrc_atac/keratinocyte_combined/keratinocyte_combined_DEGREE_TABLE_STRING_TF_signal_filtered.txt' % (projectFolder)
     degree_table_path = makeDegreeTable(edge_signal_path,string_clustering_path,normalize=True,output=degree_table_path)
 
 
@@ -485,8 +493,8 @@ def main():
     print('#======================================================================')
     print('\n\n')
 
-    crc_folder = '%scrc_atac/keratinocyte_combined_all/' % (projectFolder)
-    analysis_name = 'keratinocyte_combined_all'
+    crc_folder = '%scrc_atac/keratinocyte_combined/' % (projectFolder)
+    analysis_name = 'keratinocyte_combined'
     degree_path = '%s%s_DEGREE_TABLE.txt' % (crc_folder,analysis_name)
 
     degree_table = utils.parseTable(degree_path,'\t')
@@ -501,6 +509,10 @@ def main():
     top_tfs.sort()
     #print(top_tfs)
     print('identified %s top tfs with total degree > %s' % (len(top_tfs),cutoff))
+    
+    if not os.path.exists('%smotif_beds' % (crc_folder)):
+        os.mkdir('%smotif_beds' % (crc_folder))
+
 
     top_tf_table = [[tf] for tf in top_tfs]
     top_tf_path ='%smotif_beds/tables/top_tf_list.txt' % (crc_folder)
@@ -508,7 +520,7 @@ def main():
     print(top_tf_path)
 
     #now do an additional filtering with string
-    string_interaction_path = '%sstring/string_interactions.tsv' % (projectFolder)
+    string_interaction_path = '/grail/string/string_interactions.tsv'
     string_table = utils.parseTable(string_interaction_path,'\t')
     string_tfs = utils.uniquify([line[0] for line in string_table[1:]] + [line[1] for line in string_table[1:]])
     print('identified %s string tfs with interactions' % (len(string_tfs)))
@@ -519,11 +531,11 @@ def main():
     print(string_tf_path)
 
 
-    for top tfs
-    pipeline_dfci.plotCRCCorrMaps('top_tfs','/storage/cylin/home/cl6/projects/NIBR_YvsO_cyl/crc_atac/keratinocyte_combined_all/motif_beds/',tf_list_path=top_tf_path,window=50)
+    ##for top tfs
+    #pipeline_dfci.plotCRCCorrMaps('top_tfs','/storage/cylin/home/cl6/projects/NIBR_YvsO_cyl/crc_atac/keratinocyte_combined_all/motif_beds/',tf_list_path=top_tf_path,window=50)
 
-    for string tfs
-    pipeline_dfci.plotCRCCorrMaps('string_tfs','/storage/cylin/home/cl6/projects/NIBR_YvsO_cyl/crc_atac/keratinocyte_combined_all/motif_beds/',tf_list_path=string_tf_path,window=50)
+    ##for string tfs
+    #pipeline_dfci.plotCRCCorrMaps('string_tfs','/storage/cylin/home/cl6/projects/NIBR_YvsO_cyl/crc_atac/keratinocyte_combined_all/motif_beds/',tf_list_path=string_tf_path,window=50)
 
 
 
@@ -719,7 +731,7 @@ def mergeMacs14(macsEnrichedFolder,names_list):
 
     bed_loci = []
     for name in names_list:
-        macs_peak_path = '%s/%s_peaks.bed' % (macsEnrichedFolder,name)
+        macs_peak_path = '%s%s_peaks.bed' % (macsEnrichedFolder,name)
         macs_peaks = utils.parseTable(macs_peak_path,'\t')
         peaks_loci = []
         for line in macs_peaks:
@@ -807,7 +819,7 @@ def call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder='
 
     output_folder = utils.formatFolder('%s%s' % (crc_folder,analysis_name),True)
 
-    crc_cmd = '%s %scrc/CRC3.py -e %s -g HG19 -o %s -n %s -s %s -a %s' % (py27_path,pipeline_dir,enhancer_path,output_folder,analysis_name,subpeak_path,activity_path)
+    crc_cmd = 'crc -e %s -g HG19 -o %s -n %s -s %s -a %s -c %s' % (enhancer_path,output_folder,analysis_name,subpeak_path,activity_path, '/storage/cylin/grail/genomes/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/')
     crc_bash_path = '%s%s_crc.sh' % (crc_folder,analysis_name)
 
     crc_bash = open(crc_bash_path,'w')
