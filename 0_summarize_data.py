@@ -47,10 +47,10 @@ THE SOFTWARE.
 
 import sys, os, string
 # Get the script's full local path
-whereAmI = os.path.dirname(os.path.realpath(__file__)) +'/'
+whereAmI = os.path.dirname(os.path.realpath(__file__))
 print(whereAmI)
 
-pipeline_dir = '/'.join(whereAmI.split('/')[0:-2]) + '/pipeline/'
+pipeline_dir = '/storage/cylin/home/cl6/pipeline/'
 sys.path.append(pipeline_dir)
 print(pipeline_dir)
 
@@ -72,7 +72,7 @@ genome ='hg19'
 annotFile = '%s/annotation/%s_refseq.ucsc' % (pipeline_dir,genome)
 
 #project folders
-projectFolder = '/storage/cylin/grail/projects/%s/' % (projectName) #PATH TO YOUR PROJECT FOLDER
+projectFolder = '/storage/projects/%s/' % (projectName) #PATH TO YOUR PROJECT FOLDER
 
 #standard folder names
 gffFolder ='%sgff/' % (projectFolder)
@@ -93,11 +93,11 @@ signalFolder = '%ssignalTables/' % (projectFolder)
 tableFolder = '%stables/' % (projectFolder)
 
 #mask Files
-maskFile ='%smasks/hg19_encode_blacklist.bed' % (projectFolder)
+maskFile ='/grail/genomes/Homo_sapiens/UCSC/hg19/Annotation/Masks/hg19_encode_blacklist.bed'
 
 #genomeDirectory
-genomeDirectory = '%s/genomes/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/' % (projectFolder)
-gtfFile = '%s/gtf/genes.gtf' % (projectFolder)
+genomeDirectory = '/grail/genomes/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/'
+gtfFile = '/grail/gtf/genes.gtf'
 
 #making folders
 folderList = [gffFolder,macsFolder,macsEnrichedFolder,mappedEnrichedFolder,mappedFolder,wiggleFolder,metaFolder,metaRoseFolder,fastaFolder,figureCodeFolder,figuresFolder,geneListFolder,bedFolder,signalFolder,tableFolder]
