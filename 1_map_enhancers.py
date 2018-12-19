@@ -72,7 +72,7 @@ genome ='hg19'
 annotFile = '%s/annotation/%s_refseq.ucsc' % (pipeline_dir,genome)
 
 #project folders
-projectFolder = '/storage/cylin/grail/projects/%s/' % (projectName) #PATH TO YOUR PROJECT FOLDER
+projectFolder = '/storage/projects/%s/' % (projectName) #PATH TO YOUR PROJECT FOLDER
 
 #standard folder names
 gffFolder ='%sgff/' % (projectFolder)
@@ -93,7 +93,7 @@ signalFolder = '%ssignalTables/' % (projectFolder)
 tableFolder = '%stables/' % (projectFolder)
 genePlotFolder = '%sgene_plot/' % (projectFolder)
 #mask Files
-maskFile ='%smasks/hg19_encode_blacklist.bed' % (projectFolder)
+maskFile = '/grail/genomes/Homo_sapiens/UCSC/hg19/Annotation/Masks/hg19_encode_blacklist.bed'
 
 #genomeDirectory
 genomeDirectory = '/grail/genomes/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/'
@@ -104,7 +104,7 @@ folderList = [gffFolder,macsFolder,macsEnrichedFolder,mappedEnrichedFolder,mappe
 for folder in folderList:
     pipeline_dfci.formatFolder(folder,True)
 
-py27_path = '/storage/cylin/anaconda3/envs/py27_anaconda/bin/python'
+py27_path = '/opt/bin/python' #'/storage/cylin/anaconda3/envs/py27_anaconda/bin/python'
 #==========================================================================
 #============================LIST OF DATAFILES=============================
 #==========================================================================
@@ -193,6 +193,11 @@ def main():
 
     # #runs only if no output detected
     # run_bash(o_enhancer_bashFileName,o_enhancer_region_map_path)
+
+    analysis_name = 'combined_h3k27ac'
+    c_enhancer_bashFileName, c_enhancer_region_map_path = define_enhancer_landscape(projectFolder,pipeline_dir,analysis_name,chip_dataFile,names_list= k27ac_list)
+
+    run_bash(c_enhancer_bashFileName, c_enhancer_region_map_path)
 
 
     print('\n\n')
@@ -362,23 +367,23 @@ def main():
     print('#======================================================================')
     print('\n\n')
 
-    # # define active genes as FPKM > 10 in at least one sample
-    # # and k27ac and brd4 present at the TSS
+    # define active genes as FPKM > 10 in at least one sample
+    # and k27ac and brd4 present at the TSS
 
-    # pipeline_dfci.makeGeneGFFs(annotFile,gffFolder,'HG19')
+    pipeline_dfci.makeGeneGFFs(annotFile,gffFolder,'HG19')
 
-    # gffList = ['%sHG19_TSS_ALL_-1000_+1000.gff' % (gffFolder)]
-    # cellTypeList = ['Y','O']
+    gffList = ['%sHG19_TSS_ALL_-1000_+1000.gff' % (gffFolder)]
+    cellTypeList = ['Y','O']
     
-        
-    # mapped_path = pipeline_dfci.mapEnrichedToGFF(chip_dataFile,'TSS',gffList,cellTypeList,macsEnrichedFolder,mappedEnrichedFolder,macs=True,namesList=chip_list_no_input,useBackground=True)
-    # print(mapped_path)
+       
+    mapped_path = pipeline_dfci.mapEnrichedToGFF(chip_dataFile,'TSS',gffList,cellTypeList,macsEnrichedFolder,mappedEnrichedFolder,macs=True,namesList=chip_list_no_input,useBackground=True)
+    print(mapped_path)
 
-    # mapped_path = '%sHG19_TSS_ALL_-1000_+1000/HG19_TSS_ALL_-1000_+1000_TSS.txt' % (mappedEnrichedFolder)
-    # exp_path = '%s/cufflinks/NIBR_YvsO_cuffnorm/genes.fpkm_table' % (projectFolder)
-    # activity_path = '%sHG19_KERATINOCYTE_ACTIVE.txt' % (geneListFolder)
+    mapped_path = '%sHG19_TSS_ALL_-1000_+1000/HG19_TSS_ALL_-1000_+1000_TSS.txt' % (mappedEnrichedFolder)
+    exp_path = '%s/cufflinks/NIBR_YvsO_cuffnorm/genes.fpkm_table' % (projectFolder)
+    activity_path = '%sHG19_KERATINOCYTE_ACTIVE.txt' % (geneListFolder)
 
-    # makeActiveList(mapped_path,exp_path,annotFile,activity_path)
+    makeActiveList(mapped_path,exp_path,annotFile,activity_path)
     
 
     print('\n\n')
@@ -499,23 +504,23 @@ def main():
 
     #plotting additional genes
 
-    figure_2_gff = [['chr3','RBP1','RBP1',139232816,139260628,'','-','','RBP1'],
-                    ['chr4','SMAD1','SMAD1',146394843,146483973,'','+','','SMAD1'],
-                    ['chr4','UBA6','UBA6',68526969,68600569,'','-','','UBA6'],
-                    ['chr15','CLN6','CLN6',68508894,68523908,'','-','','CLN6'],
-                    ['chr3','XPC','XPC',14181835,14222159,'','-','','XPC'],
-                    ['chr11','DCPS','DCPS',126170837,126196119,'','+','','DCPS'],
-                    ['chr5','IRX2','IRX2',2735144,2765154,'','-','','IRX2'],
-                    ['chr8','SNAI2_WIDE','SNAI2_WIDE',49746215,49846374,'','-','','SNAI2_WIDE'],
-                    ['chr8','SNAI2_CLOSE','SNAI2_CLOSE',49826529,49841529,'','-','','SNAI2_CLOSE'],
-                    ['chr12','MMP17','MMP17',132308545,132323642,'','+','','MMP17'],
-                    ['chr15','VPS18','VPS18',41182805,41212811,'','+','','VPS18'],
-                    ['chr4','ZFP42','ZFP42',188914912,188946979,'','+','','ZFP42'],
-                    ['chrX','SAT1','SAT1',23794388,23827662,'','+','','SAT1'],
-                    ['chr6','MAPK13','MAPK13',36096634,36101634,'','+','MAPK13'],
-                ]
-    figure_gff_path = '%sHG19_KERATINOCYTE_FIGURE_2_GENES.gff' % (gffFolder)
-    utils.unParseTable(figure_2_gff,figure_gff_path,'\t')
+    #figure_2_gff = [['chr3','RBP1','RBP1',139232816,139260628,'','-','','RBP1'],
+    #                ['chr4','SMAD1','SMAD1',146394843,146483973,'','+','','SMAD1'],
+    #                ['chr4','UBA6','UBA6',68526969,68600569,'','-','','UBA6'],
+    #                ['chr15','CLN6','CLN6',68508894,68523908,'','-','','CLN6'],
+    #                ['chr3','XPC','XPC',14181835,14222159,'','-','','XPC'],
+    #                ['chr11','DCPS','DCPS',126170837,126196119,'','+','','DCPS'],
+    #                ['chr5','IRX2','IRX2',2735144,2765154,'','-','','IRX2'],
+    #                ['chr8','SNAI2_WIDE','SNAI2_WIDE',49746215,49846374,'','-','','SNAI2_WIDE'],
+    #                ['chr8','SNAI2_CLOSE','SNAI2_CLOSE',49826529,49841529,'','-','','SNAI2_CLOSE'],
+    #                ['chr12','MMP17','MMP17',132308545,132323642,'','+','','MMP17'],
+    #                ['chr15','VPS18','VPS18',41182805,41212811,'','+','','VPS18'],
+    #                ['chr4','ZFP42','ZFP42',188914912,188946979,'','+','','ZFP42'],
+    #                ['chrX','SAT1','SAT1',23794388,23827662,'','+','','SAT1'],
+    #                ['chr6','MAPK13','MAPK13',36096634,36101634,'','+','MAPK13'],
+    #            ]
+    #figure_gff_path = '%sHG19_KERATINOCYTE_FIGURE_2_GENES.gff' % (gffFolder)
+    #utils.unParseTable(figure_2_gff,figure_gff_path,'\t')
 
 
     # bed_list = ['%scrc_atac/keratinocyte_combined_all/motif_beds/IRF2_motifs.bed' % (projectFolder),
@@ -616,40 +621,40 @@ def main():
     print('#======================================================================')
     print('\n\n')
 
-    #create a delta waterfall of the enhancer promoter output between young and old
-    #takes a pair of enhancer promoter gene tables and calls a simple R script to make a waterfall
+    ##create a delta waterfall of the enhancer promoter output between young and old
+    ##takes a pair of enhancer promoter gene tables and calls a simple R script to make a waterfall
 
-    #correlates to changes in expression
-    exp_path = '%scufflinks/NIBR_YvsO_cuffnorm/genes.fpkm_table' % (projectFolder)
+    ##correlates to changes in expression
+    #exp_path = '%scufflinks/NIBR_YvsO_cuffnorm/genes.fpkm_table' % (projectFolder)
 
-    name_1 = 'keratinocyte_combined_all_old'
-    ep_gene_path_1 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,name_1,name_1)
+    #name_1 = 'keratinocyte_combined_all_old'
+    #ep_gene_path_1 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,name_1,name_1)
 
-    name_2 = 'keratinocyte_combined_all_young'
-    ep_gene_path_2 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,name_2,name_2)
+    #name_2 = 'keratinocyte_combined_all_young'
+    #ep_gene_path_2 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,name_2,name_2)
 
-    h3k27ac_name_1 = 'keratinocyte_combined_all_old_h3k27ac'
-    h3k27ac_ep_gene_path_1 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,h3k27ac_name_1,h3k27ac_name_1)
+    #h3k27ac_name_1 = 'keratinocyte_combined_all_old_h3k27ac'
+    #h3k27ac_ep_gene_path_1 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,h3k27ac_name_1,h3k27ac_name_1)
 
-    h3k27ac_name_2 = 'keratinocyte_combined_all_young_h3k27ac'
-    h3k27ac_ep_gene_path_2 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,h3k27ac_name_2,h3k27ac_name_2)
+    #h3k27ac_name_2 = 'keratinocyte_combined_all_young_h3k27ac'
+    #h3k27ac_ep_gene_path_2 = '%senhancerPromoter/%s/%s_GENE_TABLE.txt' % (projectFolder,h3k27ac_name_2,h3k27ac_name_2)
 
-    output_path = '%sfigures/%s_%s_enhancer_promoter_gene_delta.pdf' % (projectFolder,name_1,name_2)
+    #output_path = '%sfigures/%s_%s_enhancer_promoter_gene_delta.pdf' % (projectFolder,name_1,name_2)
 
-    waterfall_script_path = '%sr_scripts/enhancer_promoter_waterfall.R' % (projectFolder)
-    
-    waterfall_bash_script = '%sr_scripts/enhancer_promoter_waterfall_run.sh' % (projectFolder)
-    waterfall_bash = open(waterfall_bash_script,'w')
-    
-    waterfall_bash.write('#!/usr/bin/bash\n\n')
-    
-    
-    r_cmd = 'Rscript %s %s %s %s %s %s %s %s %s' % (waterfall_script_path,name_1,name_2,ep_gene_path_1,ep_gene_path_2,h3k27ac_ep_gene_path_1,h3k27ac_ep_gene_path_2,exp_path,output_path)
+    #waterfall_script_path = '%sr_scripts/enhancer_promoter_waterfall.R' % (projectFolder)
+    #
+    #waterfall_bash_script = '%sr_scripts/enhancer_promoter_waterfall_run.sh' % (projectFolder)
+    #waterfall_bash = open(waterfall_bash_script,'w')
+    #
+    #waterfall_bash.write('#!/usr/bin/bash\n\n')
+    #
+    #
+    #r_cmd = 'Rscript %s %s %s %s %s %s %s %s %s' % (waterfall_script_path,name_1,name_2,ep_gene_path_1,ep_gene_path_2,h3k27ac_ep_gene_path_1,h3k27ac_ep_gene_path_2,exp_path,output_path)
 
-    waterfall_bash.write(r_cmd)
-    waterfall_bash.close()
-    print(r_cmd)
-    #os.system(r_cmd)
+    #waterfall_bash.write(r_cmd)
+    #waterfall_bash.close()
+    #print(r_cmd)
+    ##os.system(r_cmd)
 
 
 
