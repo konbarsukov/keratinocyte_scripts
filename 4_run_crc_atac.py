@@ -337,7 +337,7 @@ def main():
     activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
 
     call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
-    os.system('bash %scrc_atac/keratinocyte_combined_crc.sh' % (projectFolder))
+    #os.system('bash %scrc_atac/keratinocyte_combined_crc.sh' % (projectFolder))
 
     print('\n\n')
     print('#======================================================================')
@@ -510,8 +510,8 @@ def main():
     #print(top_tfs)
     print('identified %s top tfs with total degree > %s' % (len(top_tfs),cutoff))
     
-    if not os.path.exists('%smotif_beds' % (crc_folder)):
-        os.mkdir('%smotif_beds' % (crc_folder))
+    if not os.path.exists('%smotif_beds/tables' % (crc_folder)):
+        os.mkdir('%smotif_beds/tables' % (crc_folder))
 
 
     top_tf_table = [[tf] for tf in top_tfs]
@@ -596,41 +596,41 @@ def main():
     print('\n\n')
 
 
-    #use the filtered signal table from tf_edge_brd4_delta_out function
+   # #use the filtered signal table from tf_edge_brd4_delta_out function
 
-    def get_tf_target_genes(tf_name,filtered_signal_path,cut_off = 0.5,output=''):
-    
-        '''
-        looks for target genes with at least one edge satisfying the cutoff criteria
-        if positive cutoff given, assume greater than, if negative assume less than
-        '''
+   # def get_tf_target_genes(tf_name,filtered_signal_path,cut_off = 0.5,output=''):
+   # 
+   #     '''
+   #     looks for target genes with at least one edge satisfying the cutoff criteria
+   #     if positive cutoff given, assume greater than, if negative assume less than
+   #     '''
 
-        if output == '':
-            output = filtered_signal_path.replace('EDGE_TABLE_signal_filtered.txt','%s_TARGETS_filtered_%s.txt' % (tf_name,cut_off))
+   #     if output == '':
+   #         output = filtered_signal_path.replace('EDGE_TABLE_signal_filtered.txt','%s_TARGETS_filtered_%s.txt' % (tf_name,cut_off))
 
-        target_table = [['GENE','EDGE','Y_vs_O_BRD4_LOG2']]
-        filtered_signal_table = utils.parseTable(filtered_signal_path,'\t')
-        
-        for line in filtered_signal_table[1:]:
-            source_tf = line[0].split('_')[0]
-            target_tf = line[0].split('_')[-1]
-            
-            if source_tf == tf_name:
-                delta_edge = float(line[-1])
-                if cut_off > 0 and delta_edge > cut_off:
-                    target_table.append([target_tf,line[1],line[-1]])
-                elif cut_off < 0 and delta_edge < cut_off:
-                    target_table.append([target_tf,line[1],line[-1]])
-            
-        utils.unParseTable(target_table,output,'\t')
-        print('For %s identified %s target genes with cutoff of %s' % (tf_name,str(len(target_table)-1), cut_off))
-        print('Writing output to %s' % (output))
-        return output
+   #     target_table = [['GENE','EDGE','Y_vs_O_BRD4_LOG2']]
+   #     filtered_signal_table = utils.parseTable(filtered_signal_path,'\t')
+   #     
+   #     for line in filtered_signal_table[1:]:
+   #         source_tf = line[0].split('_')[0]
+   #         target_tf = line[0].split('_')[-1]
+   #         
+   #         if source_tf == tf_name:
+   #             delta_edge = float(line[-1])
+   #             if cut_off > 0 and delta_edge > cut_off:
+   #                 target_table.append([target_tf,line[1],line[-1]])
+   #             elif cut_off < 0 and delta_edge < cut_off:
+   #                 target_table.append([target_tf,line[1],line[-1]])
+   #         
+   #     utils.unParseTable(target_table,output,'\t')
+   #     print('For %s identified %s target genes with cutoff of %s' % (tf_name,str(len(target_table)-1), cut_off))
+   #     print('Writing output to %s' % (output))
+   #     return output
 
-    
-    # tf_name = 'IRF2'
-    # filtered_signal_path = '%scrc_atac/keratinocyte_combined_all/keratinocyte_combined_all_EDGE_TABLE_signal_filtered.txt' % (projectFolder)
-    # get_tf_target_genes(tf_name,filtered_signal_path,cut_off = -0.5,output='')
+   # 
+   # # tf_name = 'IRF2'
+   # # filtered_signal_path = '%scrc_atac/keratinocyte_combined_all/keratinocyte_combined_all_EDGE_TABLE_signal_filtered.txt' % (projectFolder)
+   # # get_tf_target_genes(tf_name,filtered_signal_path,cut_off = -0.5,output='')
                                                                        
                                                                 
 
@@ -819,7 +819,7 @@ def call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder='
 
     output_folder = utils.formatFolder('%s%s' % (crc_folder,analysis_name),True)
 
-    crc_cmd = 'crc -e %s -g HG19 -o %s -n %s -s %s -a %s -c %s' % (enhancer_path,output_folder,analysis_name,subpeak_path,activity_path, '/storage/cylin/grail/genomes/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/')
+    crc_cmd = 'crc -e %s -g HG19 -o %s -n %s -s %s -a %s -c %s' % (enhancer_path,output_folder,analysis_name,subpeak_path,activity_path, '/grail/genomes/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/')
     crc_bash_path = '%s%s_crc.sh' % (crc_folder,analysis_name)
 
     crc_bash = open(crc_bash_path,'w')
