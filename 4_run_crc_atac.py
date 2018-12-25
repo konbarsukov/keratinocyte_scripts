@@ -54,6 +54,7 @@ pipeline_dir = '/storage/cylin/home/cl6/pipeline/'
 sys.path.append(whereAmI)
 sys.path.append(pipeline_dir)
 
+import subprocess
 import pipeline_dfci
 import utils
 import string
@@ -338,6 +339,16 @@ def main():
 
     call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
     #os.system('bash %scrc_atac/keratinocyte_combined_crc.sh' % (projectFolder))
+    call_crc_script = 'bash %scrc_atac/keratinocyte_combined_crc.sh' % (projectFolder)
+    proc = Popen(call_crc_script, shell=True)
+    
+    # wait for finishing crc
+    proc.wait()
+    
+    # if crc script returned 1 (failed), then exit with status 1
+    if proc.returncode:
+	print 'running %s failed' % (call_crc_script)
+	sys.exit(1)
 
     print('\n\n')
     print('#======================================================================')
