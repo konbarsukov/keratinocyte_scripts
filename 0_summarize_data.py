@@ -57,6 +57,7 @@ print(pipeline_dir)
 import pipeline_dfci
 import utils
 import string
+import subprocess
 import numpy
 import os
 import re
@@ -176,6 +177,18 @@ def main():
     groupList = [['Y_BC10_Y1','Y_BC11_Y2','Y_BC16_Y3'],['O_BC18_O1','O_BC25_O2','O_BC27_O3']]
     bashFileName = '%s%s_rna_cufflinks.sh' % (cufflinksFolder,analysis_name)
     pipeline_dfci.makeCuffTable(rna_dataFile,analysis_name,gtfFile,cufflinksFolder,groupList,bashFileName)
+    
+    call_bashFileName = 'bash %s' % bashFileName
+    proc = Popen(call_bashFileName, shell=True)
+
+    # wait for finishing cufflinks 
+    proc.wait()
+
+    # if call_bashFileName returns 1 (fail), then exit with status 1
+    if proc.returncode:
+ 	print 'running %s failed' (call_bashFileName)
+	sys.exit(1)
+    
 
 
     print('\n\n')
