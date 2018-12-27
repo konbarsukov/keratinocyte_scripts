@@ -179,7 +179,7 @@ def main():
     pipeline_dfci.makeCuffTable(rna_dataFile,analysis_name,gtfFile,cufflinksFolder,groupList,bashFileName)
     
     call_bashFileName = 'bash %s' % bashFileName
-    proc = Popen(call_bashFileName, shell=True)
+    proc = subprocess.Popen(call_bashFileName, shell=True)
 
     # wait for finishing cufflinks 
     proc.wait()
