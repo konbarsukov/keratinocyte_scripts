@@ -178,7 +178,9 @@ def main():
     #if no processed expression present, runs cuffquant/cuffnorm/RNA-seq pipeline
     cufflinksFolder = utils.formatFolder('%scufflinks' % (projectFolder),True)
     analysis_name = 'NIBR_YvsO'
-    groupList = [['Y_BC10_Y1','Y_BC11_Y2','Y_BC16_Y3'],['O_BC18_O1','O_BC25_O2','O_BC27_O3']]
+    young_rna_list = config.global_name_list_dict['young_rna_list']
+    old_rna_list = config.global_name_list_dict['old_rna_list']
+    groupList = [young_rna_list, old_rna_list]
     bashFileName = '%s%s_rna_cufflinks.sh' % (cufflinksFolder,analysis_name)
     pipeline_dfci.makeCuffTable(rna_dataFile,analysis_name,gtfFile,cufflinksFolder,groupList,bashFileName)
 
