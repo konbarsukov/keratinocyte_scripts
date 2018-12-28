@@ -30,19 +30,17 @@ THE SOFTWARE.
 
 #See README for additional information on downloading and installing dependencies
 
-#Requires linlab pipeline set of utilities 
+#Requires linlab pipeline set of utilities
 #
 
 #Requires bamliquidator
 #
 
-#Requires 
+#Requires
 
 #==========================================================================
 #=============================DEPENDENCIES=================================
 #==========================================================================
-
-
 
 
 import sys, os, string
@@ -50,7 +48,11 @@ import sys, os, string
 whereAmI = os.path.dirname(os.path.realpath(__file__))
 print(whereAmI)
 
-pipeline_dir = '/storage/cylin/home/cl6/pipeline/'
+# set up config_helper
+from config.config_helper import Config
+config = Config('./config.cfg')
+
+pipeline_dir = config.pipeline_dir
 sys.path.append(pipeline_dir)
 print(pipeline_dir)
 
@@ -68,43 +70,45 @@ from collections import defaultdict
 
 
 
-projectName = 'NIBR_YvsO_cyl'
-genome ='hg19'
-annotFile = '%s/annotation/%s_refseq.ucsc' % (pipeline_dir,genome)
+projectName = config.project_name
+genome = config.genome
+annotFile =  config.annotation_file
 
-#project folders
-projectFolder = '/storage/projects/%s/' % (projectName) #PATH TO YOUR PROJECT FOLDER
+# project folders
+projectFolder = config.project_folder
 
-#standard folder names
-gffFolder ='%sgff/' % (projectFolder)
-macsFolder = '%smacsFolder/' % (projectFolder)
-macsEnrichedFolder = '%smacsEnriched/' % (projectFolder)
-mappedEnrichedFolder = '%smappedEnriched/' % (projectFolder)
-mappedFolder = '%smappedFolder/' % (projectFolder)
-wiggleFolder = '%swiggles/' % (projectFolder)
-metaFolder = '%smeta/' % (projectFolder)
-metaRoseFolder = '%smeta_rose/' % (projectFolder)
-fastaFolder = '%sfasta/' % (projectFolder)
-bedFolder = '%sbed/' % (projectFolder)
-figureCodeFolder = '%sfigureCode/' % (projectFolder)
-figuresFolder = '%sfigures/' % (projectFolder)
-geneListFolder = '%sgeneListFolder/' % (projectFolder)
-bedFolder = '%sbeds/' % (projectFolder)
-signalFolder = '%ssignalTables/' % (projectFolder)
-tableFolder = '%stables/' % (projectFolder)
+# standard folder names
+gffFolder = config.gff_folder
+macsFolder = config.macs_folder
+macsEnrichedFolder = config.macs_enriched_folder
+mappedEnrichedFolder = config.mapped_enriched_folder
+mappedFolder = config.mapped_folder
+wiggleFolder = config.wiggles_folder
+metaFolder = config.meta_folder
+metaRoseFolder = config.meta_rose_folder
+fastaFolder = config.fasta_folder
+bedFolder = config.beds_folder
+figureCodeFolder = config.figure_code_folder
+figuresFolder = config.figures_folder
+geneListFolder = config.gene_list_folder
+signalFolder = config.signal_tables_folder
+tableFolder = config.tables_folder
+genePlotFolder = config.gene_plot_folder
 
-#mask Files
-maskFile ='/grail/genomes/Homo_sapiens/UCSC/hg19/Annotation/Masks/hg19_encode_blacklist.bed'
+# mask Files
+maskFile = config.mask_file
 
-#genomeDirectory
-genomeDirectory = '/grail/genomes/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/'
-gtfFile = '/grail/gtf/genes.gtf'
+# genome firectory
+genomeDirectory = config.genome_dir
 
-#making folders
-folderList = [gffFolder,macsFolder,macsEnrichedFolder,mappedEnrichedFolder,mappedFolder,wiggleFolder,metaFolder,metaRoseFolder,fastaFolder,figureCodeFolder,figuresFolder,geneListFolder,bedFolder,signalFolder,tableFolder]
+# gtf file
+gtfFile = config.gtf_file
+
+# making folders
+folderList = [gffFolder,macsFolder,macsEnrichedFolder,mappedEnrichedFolder,mappedFolder,wiggleFolder,metaFolder,metaRoseFolder,fastaFolder,figureCodeFolder,figuresFolder,geneListFolder,bedFolder,signalFolder,tableFolder, genePlotFolder]
 
 for folder in folderList:
-    pipeline_dfci.formatFolder(folder,True)
+    pipeline_dfci.formatFolder(folder, True)
 
 
 
@@ -117,13 +121,13 @@ for folder in folderList:
 #some data tables overlap for ease of analysis
 
 #ATAC-Seq
-atac_dataFile = '%sdata_tables/NIBR_CHIP_TABLE.txt' % (projectFolder)
+atac_dataFile = config.data_tables_dict['atac_table']
 
 #ChIP-Seq
-chip_dataFile = '%sdata_tables/NIBR_ATAC_TABLE.txt' % (projectFolder)
+chip_dataFile = config.data_tables_dict['chip_table']
 
 #RNA-Seq
-rna_dataFile = '%sdata_tables/NIBR_RNA_TABLE.txt' % (projectFolder)
+rna_dataFile = config.data_tables_dict['rna_table']
 
 
 
@@ -177,18 +181,19 @@ def main():
     groupList = [['Y_BC10_Y1','Y_BC11_Y2','Y_BC16_Y3'],['O_BC18_O1','O_BC25_O2','O_BC27_O3']]
     bashFileName = '%s%s_rna_cufflinks.sh' % (cufflinksFolder,analysis_name)
     pipeline_dfci.makeCuffTable(rna_dataFile,analysis_name,gtfFile,cufflinksFolder,groupList,bashFileName)
-    
+
+
     call_bashFileName = 'bash %s' % bashFileName
     proc = subprocess.Popen(call_bashFileName, shell=True)
 
-    # wait for finishing cufflinks 
+    # wait for finishing cufflinks
     proc.wait()
 
     # if call_bashFileName returns 1 (fail), then exit with status 1
     if proc.returncode:
- 	print 'running %s failed' (call_bashFileName)
-	sys.exit(1)
-    
+        print 'running %s failed' (call_bashFileName)
+        sys.exit(1)
+
 
 
     print('\n\n')
@@ -212,6 +217,6 @@ def main():
 #==================================THE END=================================
 #==========================================================================
 
-    
+
 if __name__=="__main__":
     main()

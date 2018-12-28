@@ -32,13 +32,13 @@ THE SOFTWARE.
 
 #See README for additional information on downloading and installing dependencies
 
-#Requires linlab pipeline set of utilities 
+#Requires linlab pipeline set of utilities
 #
 
 #Requires bamliquidator
 #
 
-#Requires 
+#Requires
 
 #==========================================================================
 #=============================DEPENDENCIES=================================
@@ -49,7 +49,11 @@ import sys, os
 # Get the script's full local path
 whereAmI = os.path.dirname(os.path.realpath(__file__))
 
-pipeline_dir = '/storage/cylin/home/cl6/pipeline/'
+# set up config_helper
+from config.config_helper import Config
+config = Config('./config.cfg')
+
+pipeline_dir = config.pipeline_dir
 
 sys.path.append(whereAmI)
 sys.path.append(pipeline_dir)
@@ -67,36 +71,37 @@ from collections import defaultdict
 
 
 
-projectName = 'NIBR_YvsO_cyl'
-genome ='hg19'
-annotFile = '%s/annotation/%s_refseq.ucsc' % (pipeline_dir,genome)
+projectName = config.project_name
+genome = config.genome
+annotFile =  config.annotation_file
+
 
 #project folders
-projectFolder = '/storage/projects/%s/' % (projectName) #PATH TO YOUR PROJECT FOLDER
+projectFolder = config.project_folder
 
 #standard folder names
-gffFolder ='%sgff/' % (projectFolder)
-macsFolder = '%smacsFolder/' % (projectFolder)
-macsEnrichedFolder = '%smacsEnriched/' % (projectFolder)
-mappedEnrichedFolder = '%smappedEnriched/' % (projectFolder)
-mappedFolder = '%smappedFolder/' % (projectFolder)
-wiggleFolder = '%swiggles/' % (projectFolder)
-metaFolder = '%smeta/' % (projectFolder)
-metaRoseFolder = '%smeta_rose/' % (projectFolder)
-fastaFolder = '%sfasta/' % (projectFolder)
-bedFolder = '%sbed/' % (projectFolder)
-figureCodeFolder = '%sfigureCode/' % (projectFolder)
-figuresFolder = '%sfigures/' % (projectFolder)
-geneListFolder = '%sgeneListFolder/' % (projectFolder)
-bedFolder = '%sbeds/' % (projectFolder)
-signalFolder = '%ssignalTables/' % (projectFolder)
-tableFolder = '%stables/' % (projectFolder)
-genePlotFolder = '%sgene_plot/' % (projectFolder)
-#mask Files
-maskFile = '/grail/genomes/Homo_sapiens/UCSC/hg19/Annotation/Masks/hg19_encode_blacklist.bed'
+gffFolder = config.gff_folder
+macsFolder = config.macs_folder
+macsEnrichedFolder = config.macs_enriched_folder
+mappedEnrichedFolder = config.mapped_enriched_folder
+mappedFolder = config.mapped_folder
+wiggleFolder = config.wiggles_folder
+metaFolder = config.meta_folder
+metaRoseFolder = config.meta_rose_folder
+fastaFolder = config.fasta_folder
+bedFolder = config.beds_folder
+figureCodeFolder = config.figure_code_folder
+figuresFolder = config.figures_folder
+geneListFolder = config.gene_list_folder
+signalFolder = config.signal_tables_folder
+tableFolder = config.tables_folder
+genePlotFolder = config.gene_plot_folder
 
-#genomeDirectory
-genomeDirectory = '/grail/genomes/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/'
+# mask Files
+maskFile = config.mask_file
+
+# genome firectory
+genomeDirectory = config.genome_dir
 
 #making folders
 folderList = [gffFolder,macsFolder,macsEnrichedFolder,mappedEnrichedFolder,mappedFolder,wiggleFolder,metaFolder,metaRoseFolder,fastaFolder,figureCodeFolder,figuresFolder,geneListFolder,bedFolder,signalFolder,tableFolder,genePlotFolder]
@@ -104,7 +109,8 @@ folderList = [gffFolder,macsFolder,macsEnrichedFolder,mappedEnrichedFolder,mappe
 for folder in folderList:
     pipeline_dfci.formatFolder(folder,True)
 
-py27_path = '/opt/bin/python' #'/storage/cylin/anaconda3/envs/py27_anaconda/bin/python'
+
+py27_path = config.py27_path #'/opt/bin/python' #'/storage/cylin/anaconda3/envs/py27_anaconda/bin/python'
 #==========================================================================
 #============================LIST OF DATAFILES=============================
 #==========================================================================
@@ -114,27 +120,27 @@ py27_path = '/opt/bin/python' #'/storage/cylin/anaconda3/envs/py27_anaconda/bin/
 #some data tables overlap for ease of analysis
 
 #ATAC-Seq
-atac_dataFile = '%sdata_tables/NIBR_ATAC_TABLE.txt' % (projectFolder)
+atac_dataFile = config.data_tables_dict['atac_table']
 
 #ChIP-Seq
-chip_dataFile = '%sdata_tables/NIBR_CHIP_TABLE.txt' % (projectFolder)
+chip_dataFile = config.data_tables_dict['chip_table']
 
 #RNA-Seq
-rna_dataFile = '%sdata_tables/NIBR_RNA_TABLE.txt' % (projectFolder)
+rna_dataFile = config.data_tables_dict['rna_table']
 
 
 #==========================================================================
 #===========================GLOBAL NAMES LISTS=============================
 #==========================================================================
 
-y_k27ac_list = ['Y_H3K27ac_1','Y_H3K27ac_2','Y_H3K27ac_3']
-o_k27ac_list = ['O_H3K27ac_1','O_H3K27ac_2','O_H3K27ac_3']
+y_k27ac_list = config.global_name_list_dict['young_h3k27ac_list']
+o_k27ac_list = config.global_name_list_dict['old_h3k27ac_list']
 k27ac_list = y_k27ac_list + o_k27ac_list
 
-y_brd4_list = ['Y_BRD4_1','Y_BRD4_2']
-o_brd4_list = ['O_BRD4_1','O_BRD4_2']
+y_brd4_list = config.global_name_list_dict['young_brd4_list']
+o_brd4_list = config.global_name_list_dict['old_brd4_list']
 
-chip_list_no_input = [name for name in pipeline_dfci.loadDataTable(chip_dataFile).keys() if name.upper().count('INPUT') == 0]
+chip_list_no_input = config.global_name_list_dict['chip_list_no_input']
 
 
 #for some reason needed to re-run macs for that brd4
@@ -206,24 +212,24 @@ def main():
     print('#======================================================================')
     print('\n\n')
 
-    
+
     # #calls the dynamic enhancer code
     # analysis_name = 'young_old_h3k27ac_se'
     # name_1 = 'young_h3k27ac'
     # name_2 = 'old_h3k27ac'
-    
+
     # rose_folder_1 = '%smeta_rose/%s/' % (projectFolder,name_1)
     # rose_folder_2 = '%smeta_rose/%s/' % (projectFolder,name_2)
     # rose_string = ','.join([rose_folder_1,rose_folder_2])
 
     # dynamic_folder = utils.formatFolder('%sdynamic_meta/' % (projectFolder),True)
     # output_folder = utils.formatFolder('%sdynamic_meta/%s/' % (projectFolder,analysis_name),True)
-    
+
     # group_1_string = ','.join(y_k27ac_list)
     # group_2_string = ','.join(o_k27ac_list)
 
     # bash_path = '%s%s.sh' % (dynamic_folder,analysis_name)
-    
+
     # bash_file = open(bash_path,'w')
 
     # bash_file.write('#!/usr/bin/bash\n\n')
@@ -231,7 +237,7 @@ def main():
 
 
     # dynamic_cmd = '%s %sdynamicEnhancer_meta.py -g %s -d %s -r %s -o %s --group1 %s --group2 %s --name1 %s --name2 %s' % (py27_path, pipeline_dir, genome, chip_dataFile,rose_string,output_folder,group_1_string,group_2_string,name_1,name_2)
-    
+
     # bash_file.write(dynamic_cmd)
 
     # bash_file.close()
@@ -301,7 +307,7 @@ def main():
     # young_loci = young_collection.getLoci()
     # old_loci = old_collection.getLoci()
 
-    # combined_loci = young_loci + old_loci 
+    # combined_loci = young_loci + old_loci
     # combined_collection = utils.LocusCollection(combined_loci)
     # stitched_collection = combined_collection.stitchCollection()
     # combined_gff= utils.locusCollectionToGFF(stitched_collection)
@@ -324,12 +330,12 @@ def main():
     print('#================V. MAKING BRD4 SUBPEAK BEDS USING MACS2===============')
     print('#======================================================================')
     print('\n\n')
-    
+
     # #for now assumes pre-run macs2 will have to add that later
     # macs2Folder = '%smacs2Folder' % (projectFolder)
     # #for young
     # young_collection = mergeMacs2(macs2Folder,y_brd4_list)
-    
+
     # #for old
     # old_collection = mergeMacs2(macs2Folder,o_brd4_list)
 
@@ -342,7 +348,7 @@ def main():
     # young_loci = young_collection.getLoci()
     # old_loci = old_collection.getLoci()
 
-    # combined_loci = young_loci + old_loci 
+    # combined_loci = young_loci + old_loci
     # combined_collection = utils.LocusCollection(combined_loci)
     # stitched_collection = combined_collection.stitchCollection()
     # combined_bed= utils.locusCollectionToBed(stitched_collection)
@@ -374,17 +380,17 @@ def main():
 
     gffList = ['%sHG19_TSS_ALL_-1000_+1000.gff' % (gffFolder)]
     cellTypeList = ['Y','O']
-    
-       
+
+
     mapped_path = pipeline_dfci.mapEnrichedToGFF(chip_dataFile,'TSS',gffList,cellTypeList,macsEnrichedFolder,mappedEnrichedFolder,macs=True,namesList=chip_list_no_input,useBackground=True)
     print(mapped_path)
 
     mapped_path = '%sHG19_TSS_ALL_-1000_+1000/HG19_TSS_ALL_-1000_+1000_TSS.txt' % (mappedEnrichedFolder)
-    exp_path = '%s/cufflinks/NIBR_YvsO_cuffnorm/genes.fpkm_table' % (projectFolder)
+    exp_path = config.fpkm_table
     activity_path = '%sHG19_KERATINOCYTE_ACTIVE.txt' % (geneListFolder)
 
     makeActiveList(mapped_path,exp_path,annotFile,activity_path)
-    
+
 
     print('\n\n')
     print('#======================================================================')
@@ -442,7 +448,7 @@ def main():
 
     # old_degree_path = '%scrc/keratinocyte_old/keratinocyte_old_DEGREE_TABLE.txt' % (projectFolder)
     # old_degree_table  = utils.parseTable(old_degree_path,'\t')
-    
+
     # tf_list = utils.uniquify([line[0] for line in young_degree_table[1:]] + [line[0] for line in old_degree_table[1:]])
 
     # degree_dict = {}
@@ -491,9 +497,9 @@ def main():
     # figure_gff_path = '%sHG19_KERATINOCYTE_FIGURE_GENES.gff' % (gffFolder)
     # plot_prefix = 'HG19_KERATINOCYTE_FIGURE_1_GENES'
     # utils.unParseTable(enhancer_tf_gff,figure_gff_path,'\t')
-    
-    
-    # #plot_keratinocyte_genes(plot_prefix,chip_dataFile,figure_gff_path,bed_string)    
+
+
+    # #plot_keratinocyte_genes(plot_prefix,chip_dataFile,figure_gff_path,bed_string)
 
 
     print('\n\n')
@@ -527,10 +533,10 @@ def main():
     #             '%scrc_atac/keratinocyte_combined_all/motif_beds/SNAI2_motifs.bed' % (projectFolder),
     #             '%scrc_atac/keratinocyte_combined_all/keratinocyte_combined_all_all_subpeak.bed' % (projectFolder),
     #             ]
-    
+
     # bed_string = ','.join(bed_list)
     # plot_prefix = 'HG19_KERATINOCYTE_FIGURE_2_GENES'
-    # plot_keratinocyte_genes(plot_prefix,chip_dataFile,figure_gff_path,bed_string)    
+    # plot_keratinocyte_genes(plot_prefix,chip_dataFile,figure_gff_path,bed_string)
 
 
     #plotting additional genes atac
@@ -539,13 +545,13 @@ def main():
     #             '%scrc_atac/keratinocyte_combined_all/motif_beds/SNAI2_motifs.bed' % (projectFolder),
     #             '%scrc_atac/keratinocyte_combined_all/keratinocyte_combined_all_all_subpeak.bed' % (projectFolder),
     #             ]
-    
+
     # bed_string = ','.join(bed_list)
 
     # atac_dataFile_riesling = '%sdata_tables/NIBR_ATAC_TABLE_NEW_riesling.txt' % (projectFolder)
     # plot_prefix = 'HG19_KERATINOCYTE_FIGURE_2_GENES_ATAC'
-    # plot_keratinocyte_atac(plot_prefix,atac_dataFile_riesling,figure_gff_path,bed_string)  
-    
+    # plot_keratinocyte_atac(plot_prefix,atac_dataFile_riesling,figure_gff_path,bed_string)
+
 
 
 
@@ -565,7 +571,7 @@ def main():
     # all_enhancer_gff = []
     # all_enhancer_gff_path = '%sHG19_keratinocyte_combined_all_-0_+0.gff' % (gffFolder)
 
-    # all_enhancer_table = utils.parseTable(all_enhancer_path,'\t')    
+    # all_enhancer_table = utils.parseTable(all_enhancer_path,'\t')
     # for line in all_enhancer_table[1:]:
     #     gff_line = [line[1],line[0],line[0],line[2],line[3],'','.','',line[0]]
     #     all_enhancer_gff.append(gff_line)
@@ -689,7 +695,7 @@ def main():
     # # #by groups of tfs
     # analysis_name = 'keratinocyte_combined'
     # crc_folder = '%scrc/%s/' % (projectFolder,analysis_name)
-    
+
 
 
     # # tf_list = ['ELK3','FOSL1','VDR']
@@ -707,7 +713,7 @@ def main():
     # # #by groups of tfs
     # analysis_name = 'keratinocyte_combined_all'
     # crc_folder = '%scrc/%s/' % (projectFolder,analysis_name)
-    
+
 
 
 
@@ -750,7 +756,7 @@ def run_bash(bash_path,output_path,maxWait=30):
     else:
         print('found prior output for %s at %s' % (bash_path,output_path))
 
-            
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~~~~~~~~~~~~~~~DEFINING KERATINOCYTE H3K27AC ENHANCER LANDSCAPE~~~~~~~~~~~
@@ -759,7 +765,7 @@ def run_bash(bash_path,output_path,maxWait=30):
 def define_enhancer_landscape(projectFolder,pipeline_dir,analysis_name,chip_dataFile,names_list= []):
 
     '''
-    defines the enhancer baseline using H3K27ac chips 
+    defines the enhancer baseline using H3K27ac chips
     enhancers defined using auto optimized stitching of nearby regions
     w/ a 2.5kb tss exclusion
     uses the meta rose code and writes out a .sh file for reproducibility
@@ -800,7 +806,7 @@ def define_enhancer_landscape(projectFolder,pipeline_dir,analysis_name,chip_data
     bashFile.close()
 
 
-    #the 4KB parameter is 
+    #the 4KB parameter is
     region_map_path = '%s%s/%s_SuperEnhancers.table.txt' % (roseFolder,analysis_name,analysis_name)
     return bashFileName,region_map_path
 
@@ -831,7 +837,7 @@ def mergeMacs2(macs2Folder,names_list):
     stitched_collection = bed_collection.stitchCollection()
 
     return stitched_collection
-    
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~~~~~~~~~~~~~~~~~~~~~~~DEFINING ACTIVE GENE LISTS~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -839,7 +845,7 @@ def mergeMacs2(macs2Folder,names_list):
 
 
 def makeActiveList(mapped_path,exp_path,annotFile,output=''):
-    
+
     '''
     makes a list of active genes
     10fpkm expression cutoff
@@ -848,12 +854,12 @@ def makeActiveList(mapped_path,exp_path,annotFile,output=''):
 
 
     exp_table =utils.parseTable(exp_path,'\t') #BC1 = young BC=old
-    
+
     exp_dict= defaultdict(float)
     for line in exp_table[1:]:
         exp_vector = [float(x) for x in line[1:]]
         exp_dict[line[0]] = max(exp_vector)
-    
+
     startDict = utils.makeStartDict(annotFile)
 
     #now make the active gene list first by chromatin
@@ -862,7 +868,7 @@ def makeActiveList(mapped_path,exp_path,annotFile,output=''):
     for i in range(1,len(mapped_table)):
         line = mapped_table[i]
         #check old
-        
+
         if max([int(line[i]) for i in [2,3]]) and max([int(line[i]) for i in [4,5,6]]) == 1:
             old_active = True
         else:
@@ -872,12 +878,12 @@ def makeActiveList(mapped_path,exp_path,annotFile,output=''):
             young_active = True
         else:
             young_active = False
-    
+
         if old_active or young_active:
             chromatin_active = True
-        
+
         gene_name = startDict[line[1]]['name']
-        
+
         if exp_dict[gene_name] > 10.0:
             active_table.append([line[1],gene_name])
 
@@ -915,7 +921,7 @@ def call_crc(analysis_name,enhancer_path,subpeak_path,activity_path):
 
     print('wrote crc command for %s to %s' % (analysis_name,crc_bash_path))
     return crc_bash_path
-        
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~~~~~~~~~~~~~~~~~~~~~~~~PLOTTING METAS ACROSS NB~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -932,7 +938,7 @@ def plot_keratinocyte_genes(plot_prefix,chip_dataFile,figure_gff_path,bed_string
     #first establish the plot folder
     plotFolder = utils.formatFolder('%sKERATINOCYTE_ALL/' % (genePlotFolder),True)
     #plot_prefix = 'HG19_KERATINOCYTE_GENES'
-    
+
     #we also have to set the extension properly between datasets
 
     #go by data file
@@ -949,7 +955,7 @@ def plot_keratinocyte_genes(plot_prefix,chip_dataFile,figure_gff_path,bed_string
     read_length = bam.getReadLengths()[0]
     bam_extension = 200-read_length
     print('For datasets in %s using an extension of %s' % (chip_dataFile,bam_extension))
-    
+
     #first do individuals
     for plot_group in ['BRD4','H3K27AC']:
         plotList = [name for name in dataDict.keys() if name.upper().count(plot_group) > 0 and name.upper().count('INPUT') == 0]
@@ -958,15 +964,15 @@ def plot_keratinocyte_genes(plot_prefix,chip_dataFile,figure_gff_path,bed_string
         pipeline_dfci.callBatchPlot(chip_dataFile,figure_gff_path,plotName,plotFolder,plotList,uniform=True,bed =bed_string,plotType= 'MULTIPLE',extension=bam_extension,multiPage = False,debug=False,nameString = '',rpm=True,rxGenome = '')
 
     #now as metas
-    plotList = y_k27ac_list + o_k27ac_list 
-    groupList = ['YOUNG_H3K27AC']*3 + ['OLD_H3K27AC']*3 
+    plotList = y_k27ac_list + o_k27ac_list
+    groupList = ['YOUNG_H3K27AC']*3 + ['OLD_H3K27AC']*3
     groupString = ','.join(groupList)
 
-    plotName = '%s_H3K27AC_META_RELATIVE' % (plot_prefix)    
+    plotName = '%s_H3K27AC_META_RELATIVE' % (plot_prefix)
     pipeline_dfci.callBatchPlot(chip_dataFile,figure_gff_path,plotName,plotFolder,plotList,uniform=False,bed =bed_string,plotType= 'MERGE',extension=bam_extension,multiPage = False,debug=False,nameString = groupString,rpm=True,rxGenome = '')
 
 
-    plotName = '%s_H3K27AC_META_UNIFORM' % (plot_prefix)    
+    plotName = '%s_H3K27AC_META_UNIFORM' % (plot_prefix)
     pipeline_dfci.callBatchPlot(chip_dataFile,figure_gff_path,plotName,plotFolder,plotList,uniform=True,bed =bed_string,plotType= 'MERGE',extension=bam_extension,multiPage = False,debug=False,nameString = groupString,rpm=True,rxGenome = '')
 
 
@@ -975,11 +981,11 @@ def plot_keratinocyte_genes(plot_prefix,chip_dataFile,figure_gff_path,bed_string
     groupList = ['YOUNG_BRD4']*2 + ['OLD_BRD4']*2
     groupString = ','.join(groupList)
 
-    plotName = '%s_BRD4_META_RELATIVE' % (plot_prefix)    
+    plotName = '%s_BRD4_META_RELATIVE' % (plot_prefix)
     pipeline_dfci.callBatchPlot(chip_dataFile,figure_gff_path,plotName,plotFolder,plotList,uniform=False,bed =bed_string,plotType= 'MERGE',extension=bam_extension,multiPage = False,debug=False,nameString = groupString,rpm=True,rxGenome = '')
 
 
-    plotName = '%s_BRD4_META_UNIFORM' % (plot_prefix)    
+    plotName = '%s_BRD4_META_UNIFORM' % (plot_prefix)
     pipeline_dfci.callBatchPlot(chip_dataFile,figure_gff_path,plotName,plotFolder,plotList,uniform=True,bed =bed_string,plotType= 'MERGE',extension=bam_extension,multiPage = False,debug=False,nameString = groupString,rpm=True,rxGenome = '')
 
     #now metas for all
@@ -987,11 +993,11 @@ def plot_keratinocyte_genes(plot_prefix,chip_dataFile,figure_gff_path,bed_string
     groupList = ['YOUNG_H3K27AC']*3 + ['OLD_H3K27AC']*3  +['YOUNG_BRD4']*2 + ['OLD_BRD4']*2
     groupString = ','.join(groupList)
 
-    plotName = '%s_ALL_META_RELATIVE' % (plot_prefix)    
+    plotName = '%s_ALL_META_RELATIVE' % (plot_prefix)
     pipeline_dfci.callBatchPlot(chip_dataFile,figure_gff_path,plotName,plotFolder,plotList,uniform=False,bed =bed_string,plotType= 'MERGE',extension=bam_extension,multiPage = False,debug=False,nameString = groupString,rpm=True,rxGenome = '')
 
 
-    plotName = '%s_ALL_META_UNIFORM' % (plot_prefix)    
+    plotName = '%s_ALL_META_UNIFORM' % (plot_prefix)
     pipeline_dfci.callBatchPlot(chip_dataFile,figure_gff_path,plotName,plotFolder,plotList,uniform=True,bed =bed_string,plotType= 'MERGE',extension=bam_extension,multiPage = False,debug=False,nameString = groupString,rpm=True,rxGenome = '')
 
 
@@ -1008,7 +1014,7 @@ def plot_keratinocyte_atac(plot_prefix,atac_dataFile,figure_gff_path,bed_string)
     #first establish the plot folder
     plotFolder = utils.formatFolder('%sKERATINOCYTE_ATAC/' % (genePlotFolder),True)
     #plot_prefix = 'HG19_KERATINOCYTE_GENES'
-    
+
     #we also have to set the extension properly between datasets
 
     #go by data file
@@ -1025,7 +1031,7 @@ def plot_keratinocyte_atac(plot_prefix,atac_dataFile,figure_gff_path,bed_string)
     read_length = bam.getReadLengths()[0]
     bam_extension = 200-read_length
     print('For datasets in %s using an extension of %s' % (atac_dataFile,bam_extension))
-    
+
     #first do individuals
     for plot_group in ['Y','O']:
         plotList = [name for name in dataDict.keys() if name.upper().count(plot_group) > 0 and name.upper().count('INPUT') == 0]
@@ -1036,15 +1042,15 @@ def plot_keratinocyte_atac(plot_prefix,atac_dataFile,figure_gff_path,bed_string)
     y_list = [name for name in dataDict.keys() if name.upper().count('Y') >0]
     o_list = [name for name in dataDict.keys() if name.upper().count('O') >0]
     #now as metas
-    plotList = y_list + o_list 
+    plotList = y_list + o_list
     groupList = ['YOUNG']*len(y_list) + ['OLD']*len(o_list)
     groupString = ','.join(groupList)
 
-    plotName = '%s_META_RELATIVE' % (plot_prefix)    
+    plotName = '%s_META_RELATIVE' % (plot_prefix)
     pipeline_dfci.callBatchPlot(atac_dataFile,figure_gff_path,plotName,plotFolder,plotList,uniform=False,bed =bed_string,plotType= 'MERGE',extension=bam_extension,multiPage = False,debug=False,nameString = groupString,rpm=True,rxGenome = '')
 
 
-    plotName = '%s_META_UNIFORM' % (plot_prefix)    
+    plotName = '%s_META_UNIFORM' % (plot_prefix)
     pipeline_dfci.callBatchPlot(atac_dataFile,figure_gff_path,plotName,plotFolder,plotList,uniform=True,bed =bed_string,plotType= 'MERGE',extension=bam_extension,multiPage = False,debug=False,nameString = groupString,rpm=True,rxGenome = '')
 
 
@@ -1057,20 +1063,20 @@ def wrap_enhancer_promoter(dataFile,input_path,activity_path,analysis_name,names
     '''
     runs enhancer promoter on everybody with the conserved regions and union of active genes
     '''
-    
+
     #hard coded paths
     tads_path ='%shESC_domains_hg19.bed' %(bedFolder)
 
     #setting the output folder
     ep_folder = utils.formatFolder('%senhancerPromoter/' % (projectFolder),True)
-    
+
 
 
     dataDict = pipeline_dfci.loadDataTable(dataFile)
 
     bams_list = [dataDict[name]['bam'] for name in names_list]
     bams_string = ' '.join(bams_list)
-    
+
     background_names = [dataDict[name]['background'] for name in names_list]
     background_list = [dataDict[background_name]['bam'] for background_name in background_names]
     background_string = ' '.join(background_list)
@@ -1081,7 +1087,7 @@ def wrap_enhancer_promoter(dataFile,input_path,activity_path,analysis_name,names
 
     ep_bash.write('#!/usr/bin/bash\n\n\n')
     ep_bash.write('#SBATCH --mem=16000\n\n')
-    
+
     ep_bash.write('#enhancer promoter analysis for %s\n\n' % (analysis_name))
 
     ep_bash.write('cd %s%s/\n\n' % (ep_folder,analysis_name))
@@ -1097,7 +1103,7 @@ def wrap_enhancer_promoter(dataFile,input_path,activity_path,analysis_name,names
         ep_bash.write(python_cmd)
 
     ep_bash.close()
-    
+
     #generate an anticipated output to check for completeness
     output_path = '%s%s/%s_TOP_%s_ORDERED.txt' % (ep_folder,analysis_name,analysis_name,top)
 
@@ -1119,11 +1125,11 @@ def tf_motif_brd4_delta(crc_folder,chip_dataFile,analysis_name,y_brd4_list,o_brd
     subpeak_bed_path = '%s%s_all_subpeak.bed' % (crc_folder,analysis_name)
     #direct the output to the crc folder
     signal_path = '%s%s_all_subpeak_signal.txt' % (crc_folder,analysis_name)
-    
+
     #set final output
     output_path = '%s%s_brd4_subpeak_delta_out.txt' % (crc_folder,analysis_name)
 
-    
+
     all_brd4_list = y_brd4_list + o_brd4_list
     pipeline_dfci.map_regions(chip_dataFile,[subpeak_bed_path],mappedFolder,signalFolder,all_brd4_list,True,signal_path)
 
@@ -1131,7 +1137,7 @@ def tf_motif_brd4_delta(crc_folder,chip_dataFile,analysis_name,y_brd4_list,o_brd
     print('making log2 y vs o signal dict at subpeaks')
     signal_table = utils.parseTable(signal_path,'\t')
     signal_dict = defaultdict(float)
-    
+
     #figure out columns for young and old
     o_columns = [signal_table[0].index(name) for name in o_brd4_list]
     y_columns = [signal_table[0].index(name) for name in y_brd4_list]
@@ -1149,14 +1155,14 @@ def tf_motif_brd4_delta(crc_folder,chip_dataFile,analysis_name,y_brd4_list,o_brd
         line_locus = utils.Locus(line[0],int(line[1]),int(line[2]),'.')
         subpeak_loci.append(line_locus)
 
-        
+
     #next create a dictionary of all tfs in the system
     tf_table_path = '%s%s_GENE_TF_TABLE.txt' % (crc_folder,analysis_name)
-    
+
     tf_table = utils.parseTable(tf_table_path,'\t')
     tf_list = utils.uniquify([line[0] for line in tf_table[1:]])
     tf_list.sort()
-    
+
     print('finding motifs for tfs')
     print(tf_list)
 
@@ -1177,7 +1183,7 @@ def tf_motif_brd4_delta(crc_folder,chip_dataFile,analysis_name,y_brd4_list,o_brd
         for subpeak_locus in subpeak_loci:
             if motif_collection.getOverlap(subpeak_locus,'both'):
                 out_degree_delta_dict[tf_name].append(signal_dict[subpeak_locus.__str__()])
-        
+
     out_degree_table = [['TF_NAME','DELTA_MEAN','DELTA_MEDIAN','DELTA_STD']]
     for tf_name in tf_list:
         delta_line = [tf_name] + [numpy.mean(out_degree_delta_dict[tf_name]),numpy.median(out_degree_delta_dict[tf_name]),numpy.std(out_degree_delta_dict[tf_name])]
@@ -1205,13 +1211,13 @@ def tf_group_brd4_delta(crc_folder,chip_dataFile,analysis_name,tf_list,tf_group_
     subpeak_bed_path = '%s%s_all_subpeak.bed' % (crc_folder,analysis_name)
     #direct the output to the crc folder
     signal_path = '%s%s_all_subpeak_signal.txt' % (crc_folder,analysis_name)
-    
+
     #set final output
     output_path = '%s%s_all_subpeak_signal_%s.txt' % (crc_folder,analysis_name,tf_group_name)
 
     if len(tf_list) == 0:
         #next create a dictionary of all tfs in the system
-        tf_table_path = '/storage/cylin/home/cl6/projects/NIBR_YvsO_cyl/crc/keratinocyte_combined/keratinocyte_combined_GENE_TF_TABLE.txt' 
+        tf_table_path = '/storage/cylin/home/cl6/projects/NIBR_YvsO_cyl/crc/keratinocyte_combined/keratinocyte_combined_GENE_TF_TABLE.txt'
 
         tf_table = utils.parseTable(tf_table_path,'\t')
         tf_list = utils.uniquify([line[0] for line in tf_table[1:]])
@@ -1221,7 +1227,7 @@ def tf_group_brd4_delta(crc_folder,chip_dataFile,analysis_name,tf_list,tf_group_
     print('making log2 y vs o signal dict at subpeaks')
     signal_table = utils.parseTable(signal_path,'\t')
     signal_dict = defaultdict(float)
-    
+
     #figure out columns for young and old
     o_columns = [signal_table[0].index(name) for name in o_brd4_list]
     y_columns = [signal_table[0].index(name) for name in y_brd4_list]
@@ -1255,7 +1261,7 @@ def tf_group_brd4_delta(crc_folder,chip_dataFile,analysis_name,tf_list,tf_group_
     for i in range(len(subpeak_table)):
         line = subpeak_table[i]
         line_locus = utils.Locus(line[0],int(line[1]),int(line[2]),'.')
-        
+
         motif_line = [line_locus.len()]
         for tf_name in tf_list:
             motif_line.append(len(motif_dict[tf_name].getOverlap(line_locus)))
@@ -1266,12 +1272,12 @@ def tf_group_brd4_delta(crc_folder,chip_dataFile,analysis_name,tf_list,tf_group_
     return(output_path)
 
 
-        
-    
+
+
 #==========================================================================
 #==================================THE END=================================
 #==========================================================================
 
-    
+
 if __name__=="__main__":
     main()

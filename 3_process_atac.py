@@ -30,13 +30,13 @@ THE SOFTWARE.
 
 #See README for additional information on downloading and installing dependencies
 
-#Requires linlab pipeline set of utilities 
+#Requires linlab pipeline set of utilities
 #
 
 #Requires bamliquidator
 #
 
-#Requires 
+#Requires
 
 #==========================================================================
 #=============================DEPENDENCIES=================================
@@ -47,7 +47,11 @@ import sys, os
 # Get the script's full local path
 whereAmI = os.path.dirname(os.path.realpath(__file__))
 
-pipeline_dir = '/storage/cylin/home/cl6/pipeline/'
+# set up config_helper
+from config.config_helper import Config
+config = Config('./config.cfg')
+
+pipeline_dir = config.pipeline_dir
 
 sys.path.append(whereAmI)
 sys.path.append(pipeline_dir)
@@ -63,38 +67,38 @@ from collections import defaultdict
 #============================PARAMETERS====================================
 #==========================================================================
 
-py27_path = '/storage/cylin/anaconda3/envs/py27_anaconda/bin/python'
+# python path
+py27_path = config.py27_path
 
-projectName = 'NIBR_YvsO_cyl'
-genome ='hg19'
-annotFile = '%s/annotation/%s_refseq.ucsc' % (pipeline_dir,genome)
+projectName = config.project_name
+genome = config.genome
+annotFile =  config.annotation_file
 
 #project folders
-projectFolder = '/storage/cylin/grail/projects/%s/' % (projectName) #PATH TO YOUR PROJECT FOLDER
+projectFolder = config.project_folder
 
 #standard folder names
-gffFolder ='%sgff/' % (projectFolder)
-macsFolder = '%smacsFolder/' % (projectFolder)
-macsEnrichedFolder = '%smacsEnriched/' % (projectFolder)
-mappedEnrichedFolder = '%smappedEnriched/' % (projectFolder)
-mappedFolder = '%smappedFolder/' % (projectFolder)
-wiggleFolder = '%swiggles/' % (projectFolder)
-metaFolder = '%smeta/' % (projectFolder)
-metaRoseFolder = '%smeta_rose/' % (projectFolder)
-fastaFolder = '%sfasta/' % (projectFolder)
-bedFolder = '%sbed/' % (projectFolder)
-figureCodeFolder = '%sfigureCode/' % (projectFolder)
-figuresFolder = '%sfigures/' % (projectFolder)
-geneListFolder = '%sgeneListFolder/' % (projectFolder)
-bedFolder = '%sbeds/' % (projectFolder)
-signalFolder = '%ssignalTables/' % (projectFolder)
-tableFolder = '%stables/' % (projectFolder)
+gffFolder = config.gff_folder
+macsFolder = config.macs_folder
+macsEnrichedFolder = config.macs_enriched_folder
+mappedEnrichedFolder = config.mapped_enriched_folder
+mappedFolder = config.mapped_folder
+wiggleFolder = config.wiggles_folder
+metaFolder = config.meta_folder
+metaRoseFolder = config.meta_rose_folder
+fastaFolder = config.fasta_folder
+bedFolder = config.beds_folder
+figureCodeFolder = config.figure_code_folder
+figuresFolder = config.figures_folder
+geneListFolder = config.gene_list_folder
+signalFolder = config.signal_tables_folder
+tableFolder = config.tables_folder
 
-#mask Files
-maskFile ='%smasks/hg19_encode_blacklist.bed' % (projectFolder)
+# mask Files
+maskFile = config.mask_file
 
-#genomeDirectory
-genomeDirectory = '/grail/genomes/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/'
+# genome firectory
+genomeDirectory = config.genome_dir
 
 #making folders
 folderList = [gffFolder,macsFolder,macsEnrichedFolder,mappedEnrichedFolder,mappedFolder,wiggleFolder,metaFolder,metaRoseFolder,fastaFolder,figureCodeFolder,figuresFolder,geneListFolder,bedFolder,signalFolder,tableFolder]
@@ -116,7 +120,7 @@ for folder in folderList:
 
 
 #ATAC-Seq
-atac_dataFile = '%sdata_tables/NIBR_ATAC_TABLE_NEW.txt' % (projectFolder)
+atac_dataFile = config.data_tables_dict['atac_table']
 
 atac_dataFile_riesling = atac_dataFile.replace('.txt','_riesling.txt')
 
@@ -157,7 +161,7 @@ def main():
 
     # #atac_params =  '--end-to-end --sensitive --no-unal --no-discordant --mm --met-stderr --time'
     # #pipeline_dfci.makeBowtieBashJobsSlurm(atac_dataFile,namesList = [],launch=True,overwrite=False,pCount=16,paramString=atac_params)
-    
+
 
 
 
@@ -166,9 +170,9 @@ def main():
     print('#======================III. RUNNING RIESLING===========================')
     print('#======================================================================')
     print('\n\n')
-    
+
     # #riesling is an ATAC-seq pipeline jointly developed by our lab and the Gordon lab at WUSTL
-    
+
     # #it sanitizes the bams removing duplicate and mitochondrial reads
 
     # riesling_dir = utils.formatFolder('%sriesling/' % (projectFolder),True)
@@ -176,25 +180,25 @@ def main():
     # output_dir = utils.formatFolder('/storage/cylin/grail/bam/hg19/NIBR_YvsO/ATACseq_YvsO/riesling/',True)
 
     # analysis_name = 'NIBR_ATAC_NEW'
-    
+
     # riesling_bash_path = '%s%s_riesling.sh' % (riesling_dir,analysis_name)
 
     # riesling_bash = open(riesling_bash_path,'w')
 
     # riesling_bash.write('#!/usr/bin/bash\n\n')
-    
+
     # #now write the sbatch headers
     # riesling_bash.write('#SBATCH -n 32\n#SBATCH --mem=512000\n')
-    # riesling_bash.write('#SBATCH -o %s%s_reisling_slurm_%%j.out\n' % (riesling_dir,analysis_name)) 
-    # riesling_bash.write('#SBATCH -e %s%s_reisling_slurm_%%j.err\n' % (riesling_dir,analysis_name)) 
+    # riesling_bash.write('#SBATCH -o %s%s_reisling_slurm_%%j.out\n' % (riesling_dir,analysis_name))
+    # riesling_bash.write('#SBATCH -e %s%s_reisling_slurm_%%j.err\n' % (riesling_dir,analysis_name))
     # riesling_bash.write('pwd; hostname; date\n\n')
-    
+
     # riesling_bash.write('cd /storage/cylin/bin/riesling-pipeline/\n')
     # riesling_bash.write('%s 2-sanitize-bam.py -i %s -o %s -g %s -v\n' % (py27_path,input_dir, output_dir,genome))
     # riesling_bash.close()
-    
+
     # print('writing riesling bam commands to %s' % (riesling_bash_path))
-            
+
 
 
     print('\n\n')
@@ -232,7 +236,7 @@ def main():
     print('#======================================================================')
     print('\n\n')
 
-    
+
     atac_dataFile_riesling = atac_dataFile.replace('.txt','_riesling.txt')
     #run_macs(atac_dataFile_riesling,False)
 
@@ -300,7 +304,7 @@ def run_macs(dataFile,useBackground=True):
             else:
                 print('Error: peak calling timed out')
                 sys.exit()
-    
+
     #now format the macs output
     print('formatting macs output')
     dataDict = pipeline_dfci.loadDataTable(dataFile)
@@ -335,6 +339,6 @@ def run_bash(bash_path,output_path,maxWait=30):
 #==================================THE END=================================
 #==========================================================================
 
-    
+
 if __name__=="__main__":
     main()
