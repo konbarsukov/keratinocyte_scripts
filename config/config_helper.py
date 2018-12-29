@@ -54,7 +54,8 @@ class Config:
     @property
     def fpkm_table(self):
         return self.config.get('DEPENDENCIES', 'fpkm_table')
-
+     
+    @property
     def data_tables_dict(self):
         return self.__create_section_dict('DATA_TABLES')
 
