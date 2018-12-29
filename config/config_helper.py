@@ -1,10 +1,12 @@
 import ConfigParser
+import ast
+import sys
 
 class Config:
 
     def __init__(self, path='./config.cfg'):
         self.config = self.get_config(path)
-        
+
         folders_dict = self.__create_section_dict('PROJECT_FOLDERS')
         for key, value in folders_dict.items():
             setattr(self, key, value)
@@ -56,19 +58,46 @@ class Config:
     def data_tables_dict(self):
         return self.__create_section_dict('DATA_TABLES')
 
-    @property
-    def global_name_list_dict(self):
-        return self.__create_section_dict('GLOBAL_NAMES_LIST')
+    # @property
+    def global_name_list(self, key):
+
+        v = self.__create_section_dict('GLOBAL_NAMES_LIST').get(key)
+        if not v:
+            return None
+
+        try:
+            list = ast.literal_eval(v)
+        except SyntaxError:
+            print('Error: {} can not be formated to list'.format(v))
+            sys.exit(1)
+
+
+
+        return ast.literal_eval(v)
 
     # __make_section_dict creates section dictionary
     # without DEFAULT options 'ProjectName' and 'ProjectFolder'
     def __create_section_dict(self, section_name):
-        names_list = self.config.items(section_name)
-        names_dict = {item[0]: item[1] for item in names_list}
+        options_list = self.config.items(section_name)
+
+        # # remove DEFAULT options from dict
+        # for item in options_list:
+        #     print(item)
+        #     if item[0] == 'project_name' or item[0] == 'project_folder':
+        #         print('deleted')
+        #         # options_list.remove(item)
+        #
+        # print(options_list)
+
+        default = ['project_name', 'project_folder']
+
+        # names_dict = {item[0]: ast.literal_eval(item[1]) for item in options_list if not default.count(item[0])}
+        names_dict = {item[0]: item[1] for item in options_list if not default.count(item[0])}
+
 
         # remove DEFAULT options from dict
-        names_dict.pop('project_name', None)
-        names_dict.pop('project_folder', None)
+        # names_dict.pop('project_name', None)
+        # names_dict.pop('project_folder', None)
 
         return names_dict
 
