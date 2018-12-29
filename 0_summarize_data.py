@@ -178,8 +178,8 @@ def main():
     #if no processed expression present, runs cuffquant/cuffnorm/RNA-seq pipeline
     cufflinksFolder = utils.formatFolder('%s/cufflinks' % (projectFolder),True)
     analysis_name = 'NIBR_YvsO'
-    young_rna_list = config.global_name_list_dict['young_rna_list']
-    old_rna_list = config.global_name_list_dict['old_rna_list']
+    young_rna_list = config.global_name_list('young_rna_list')
+    old_rna_list = config.global_name_list('old_rna_list')
     print(old_rna_list)
     groupList = [young_rna_list, old_rna_list]
     bashFileName = '%s%s_rna_cufflinks.sh' % (cufflinksFolder,analysis_name)
