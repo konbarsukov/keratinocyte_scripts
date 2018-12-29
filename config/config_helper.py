@@ -54,7 +54,7 @@ class Config:
     @property
     def fpkm_table(self):
         return self.config.get('DEPENDENCIES', 'fpkm_table')
-     
+
     @property
     def data_tables_dict(self):
         return self.__create_section_dict('DATA_TABLES')
@@ -81,24 +81,9 @@ class Config:
     def __create_section_dict(self, section_name):
         options_list = self.config.items(section_name)
 
-        # # remove DEFAULT options from dict
-        # for item in options_list:
-        #     print(item)
-        #     if item[0] == 'project_name' or item[0] == 'project_folder':
-        #         print('deleted')
-        #         # options_list.remove(item)
-        #
-        # print(options_list)
-
+        # make dictionary without default options
         default = ['project_name', 'project_folder']
-
-        # names_dict = {item[0]: ast.literal_eval(item[1]) for item in options_list if not default.count(item[0])}
         names_dict = {item[0]: item[1] for item in options_list if not default.count(item[0])}
-
-
-        # remove DEFAULT options from dict
-        # names_dict.pop('project_name', None)
-        # names_dict.pop('project_folder', None)
 
         return names_dict
 
