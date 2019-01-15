@@ -2,6 +2,9 @@ import ConfigParser
 import ast
 import sys
 
+'''
+Config class contains all dependencies and methods to access them
+'''
 class Config:
 
     def __init__(self, path='./config.cfg'):
@@ -11,73 +14,107 @@ class Config:
         for key, value in folders_dict.items():
             setattr(self, key, value)
 
+    '''
+    Project name
+    '''
     @property
     def project_name(self):
         return self.config.get('DEFAULT', 'project_name')
 
+    '''
+    Path to project folder
+    '''
     @property
     def project_folder(self):
         return self.config.get('DEFAULT', 'project_folder')
 
+    '''
+    Path to pipeline_dir
+    '''
     @property
     def pipeline_dir(self):
         return self.config.get('DEPENDENCIES', 'pipeline_dir')
 
+    '''
+    Genome name
+    '''
     @property
     def genome(self):
         return self.config.get('DEPENDENCIES', 'genome')
 
+    '''
+    Path to annotation file
+    '''
     @property
     def annotation_file(self):
         return self.config.get('DEPENDENCIES', 'annotation_file')
 
+    '''
+    Path to mask file
+    '''
     @property
     def mask_file(self):
         return self.config.get('DEPENDENCIES', 'mask_file')
 
+    '''
+    Path to genome directory
+    '''
     @property
     def genome_dir(self):
         return self.config.get('DEPENDENCIES', 'genome_directory')
 
+    '''
+    Path to gtf file
+    '''
     @property
     def gtf_file(self):
         return self.config.get('DEPENDENCIES', 'gtf_file')
 
+    '''
+    Path to current python
+    '''
     @property
     def py27_path(self):
         return self.config.get('DEPENDENCIES', 'py27_path')
 
+    '''
+    Path to crc binary file
+    '''
     @property
     def crc_path(self):
         return self.config.get('DEPENDENCIES', 'crc_path')
 
+    '''
+    Path to dpkm_table (produced by cufflinks)
+    '''
     @property
     def fpkm_table(self):
         return self.config.get('DEPENDENCIES', 'fpkm_table')
 
-    @property
-    def data_tables_dict(self):
-        return self.__create_section_dict('DATA_TABLES')
+    '''
+    get_data_table(self, key) returns data_tables or interrupts program with exit
+    status 1
+    '''
+    def get_data_table(self, key):
 
-    # @property
-    def global_name_list(self, key):
+        result = self.__get_dict('DATA_TABLES', key)
 
-        v = self.__create_section_dict('GLOBAL_NAMES_LIST').get(key)
-        if not v:
-            return None
+        return result
 
-        try:
-            list = ast.literal_eval(v)
-        except SyntaxError:
-            print('Error: {} can not be formated to list'.format(v))
-            sys.exit(1)
+    '''
+    get_global_name(self, key) returns global_names or interrupts program with exit
+    status 1
+    '''
+    def get_global_name(self, key):
 
+        result = self.__get_dict('GLOBAL_NAMES_LIST', key)
 
+        return result
 
-        return ast.literal_eval(v)
-
-    # __make_section_dict creates section dictionary
-    # without DEFAULT options 'ProjectName' and 'ProjectFolder'
+    '''
+    __make_section_dict() creates section dictionary
+    without DEFAULT options 'ProjectName' and 'ProjectFolder
+    '''
     def __create_section_dict(self, section_name):
         options_list = self.config.items(section_name)
 
@@ -87,6 +124,29 @@ class Config:
 
         return names_dict
 
+    '''
+    __get_dict() returns section dictionary
+    if key not found method interrupts program with status 1
+    if key value can not be converted to python literal,
+    method interrupts program with status 1
+    '''
+    def __get_dict(self, section, key):
+        result = None
+        v = self.__create_section_dict(section).get(key)
+        if not v:
+            print('in section {} value {} for key {} not found'.format(section, v, key))
+            sys.exit(1)
+        try:
+            result = ast.literal_eval(v)
+        except SyntaxError:
+            print('in section {} value {} for key {} can not be formated'.format(section, v, key))
+            sys.exit(1)
+
+        return result
+
+    '''
+    get_config() return initialized config object
+    '''
     @staticmethod
     def get_config(path):
         config = ConfigParser.ConfigParser()

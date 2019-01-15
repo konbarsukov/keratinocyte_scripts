@@ -120,7 +120,7 @@ for folder in folderList:
 
 
 #ATAC-Seq
-atac_dataFile = config.data_tables_dict['atac_table']
+atac_dataFile = config.get_data_table('atac_table')
 
 atac_dataFile_riesling = atac_dataFile.replace('.txt','_riesling.txt')
 

@@ -120,27 +120,27 @@ py27_path = config.py27_path #'/opt/bin/python' #'/storage/cylin/anaconda3/envs/
 #some data tables overlap for ease of analysis
 
 #ATAC-Seq
-atac_dataFile = config.data_tables_dict['atac_table']
+atac_dataFile = config.get_data_table('atac_table')
 
 #ChIP-Seq
-chip_dataFile = config.data_tables_dict['chip_table']
+chip_dataFile = config.get_data_table('chip_table')
 
 #RNA-Seq
-rna_dataFile = config.data_tables_dict['rna_table']
+rna_dataFile = config.get_data_table('rna_table')
 
 
 #==========================================================================
 #===========================GLOBAL NAMES LISTS=============================
 #==========================================================================
 
-y_k27ac_list = config.global_name_list_dict['young_h3k27ac_list']
-o_k27ac_list = config.global_name_list_dict['old_h3k27ac_list']
+y_k27ac_list = config.get_global_name('young_h3k27ac_list')
+o_k27ac_list = config.get_global_name('old_h3k27ac_list')
 k27ac_list = y_k27ac_list + o_k27ac_list
 
-y_brd4_list = config.global_name_list_dict['young_brd4_list']
-o_brd4_list = config.global_name_list_dict['old_brd4_list']
+y_brd4_list = config.get_global_name('young_brd4_list')
+o_brd4_list = config.get_global_name('old_brd4_list')
 
-chip_list_no_input = config.global_name_list_dict['chip_list_no_input']
+chip_list_no_input = config.get_global_name('chip_list_no_input')
 
 
 #for some reason needed to re-run macs for that brd4

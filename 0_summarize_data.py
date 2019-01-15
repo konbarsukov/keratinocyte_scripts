@@ -121,13 +121,13 @@ for folder in folderList:
 #some data tables overlap for ease of analysis
 
 #ATAC-Seq
-atac_dataFile = config.data_tables_dict['atac_table']
+atac_dataFile = config.get_data_table('atac_table')
 
 #ChIP-Seq
-chip_dataFile = config.data_tables_dict['chip_table']
+chip_dataFile = config.get_data_table('chip_table')
 
 #RNA-Seq
-rna_dataFile = config.data_tables_dict['rna_table']
+rna_dataFile = config.get_data_table('rna_table')
 
 
 
@@ -178,8 +178,8 @@ def main():
     #if no processed expression present, runs cuffquant/cuffnorm/RNA-seq pipeline
     cufflinksFolder = utils.formatFolder('%s/cufflinks' % (projectFolder),True)
     analysis_name = 'NIBR_YvsO'
-    young_rna_list = config.global_name_list('young_rna_list')
-    old_rna_list = config.global_name_list('old_rna_list')
+    young_rna_list = config.get_global_name('young_rna_list')
+    old_rna_list = config.get_global_name('old_rna_list')
     print(old_rna_list)
     groupList = [young_rna_list, old_rna_list]
     bashFileName = '%s%s_rna_cufflinks.sh' % (cufflinksFolder,analysis_name)
