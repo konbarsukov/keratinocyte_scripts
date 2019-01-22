@@ -1,6 +1,7 @@
 import ConfigParser
 import ast
 import sys
+import posixpath
 
 '''
 Config class contains all dependencies and methods to access them
@@ -26,14 +27,18 @@ class Config:
     '''
     @property
     def project_folder(self):
-        return self.config.get('DEFAULT', 'project_folder')
+        path = self.config.get('DEFAULT', 'project_folder')
+        _check_path(path)
+        return path
 
     '''
     Path to pipeline_dir
     '''
     @property
     def pipeline_dir(self):
-        return self.config.get('DEPENDENCIES', 'pipeline_dir')
+        path = self.config.get('DEPENDENCIES', 'pipeline_dir')
+        _check_path(path)
+        return path
 
     '''
     Genome name
@@ -47,66 +52,95 @@ class Config:
     '''
     @property
     def annotation_file(self):
-        return self.config.get('DEPENDENCIES', 'annotation_file')
+        path = self.config.get('DEPENDENCIES', 'annotation_file')
+        _check_path(path)
+        return path
 
     '''
     Path to mask file
     '''
     @property
     def mask_file(self):
-        return self.config.get('DEPENDENCIES', 'mask_file')
+        path = self.config.get('DEPENDENCIES', 'mask_file')
+        _check_path(path)
+        return path
 
     '''
     Path to genome directory
     '''
     @property
     def genome_dir(self):
-        return self.config.get('DEPENDENCIES', 'genome_directory')
-
+        path = self.config.get('DEPENDENCIES', 'genome_directory')
+        _check_path(path)
+        return path
     '''
     Path to gtf file
     '''
     @property
     def gtf_file(self):
-        return self.config.get('DEPENDENCIES', 'gtf_file')
+        path = self.config.get('DEPENDENCIES', 'gtf_file')
+        _check_path(path)
+        return path
 
     '''
     Path to current python
     '''
     @property
     def py27_path(self):
-        return self.config.get('DEPENDENCIES', 'py27_path')
+        path = self.config.get('DEPENDENCIES', 'py27_path')
+        _check_path(path)
+        return path
 
     '''
     Path to crc binary file
     '''
     @property
     def crc_path(self):
-        return self.config.get('DEPENDENCIES', 'crc_path')
+        path = self.config.get('DEPENDENCIES', 'crc_path')
+        _check_path(path)
+        return path
 
     '''
-    Path to dpkm_table (produced by cufflinks)
+    Path to dpkm_table (creates by cufflinks in step 0)
     '''
     @property
     def fpkm_table(self):
-        return self.config.get('DEPENDENCIES', 'fpkm_table')
+        path = self.config.get('DEPENDENCIES', 'fpkm_table')
+        _check_path(path)
+        return path
+
+    '''
+    Path to string_interaction_path
+    '''
+    @property
+    def string_interaction_path(self):
+        path = self.config.get('DEPENDENCIES', 'string_interaction_path')
+        _check_path(path)
+        return path
+
+    '''
+    Path to string_clustering_path
+    '''
+    @property
+    def string_clustering_path(self):
+        path = self.config.get('DEPENDENCIES', 'string_clustering_path')
+        _check_path(path)
+        return path
 
     '''
     get_data_table(self, key) returns data_tables or interrupts program with exit
     status 1
     '''
     def get_data_table(self, key):
-
-        result = self.__get_dict('DATA_TABLES', key)
-
-        return result
+        path = self.__get_dict('DATA_TABLES', key)
+        _check_path(path)
+        return path
 
     '''
     get_global_name(self, key) returns global_names or interrupts program with exit
     status 1
     '''
     def get_global_name(self, key):
-
         result = self.__get_dict('GLOBAL_NAMES_LIST', key)
 
         return result
@@ -134,12 +168,12 @@ class Config:
         result = None
         v = self.__create_section_dict(section).get(key)
         if not v:
-            print('in section {} value {} for key {} not found'.format(section, v, key))
+            print('Config: in section {} value {} for key {} not found'.format(section, v, key))
             sys.exit(1)
         try:
             result = ast.literal_eval(v)
         except SyntaxError:
-            print('in section {} value {} for key {} can not be formated'.format(section, v, key))
+            print('Config: in section {} value {} for key {} can not be formated'.format(section, v, key))
             sys.exit(1)
 
         return result
@@ -149,9 +183,20 @@ class Config:
     '''
     @staticmethod
     def get_config(path):
+        _check_path(path)
         config = ConfigParser.ConfigParser()
         config.read(path)
         return config
+
+'''
+_check_path() closes program if file is not existed or exit with status 1
+'''
+def _check_path(path):
+    if not posixpath.exists(path):
+        print('Config: file or dir {} is not existed'.format(path))
+        sys.exit(1)
+    print('Config: found file or dir {}'.format(path))
+
 
 
 if __name__ == "__main__":

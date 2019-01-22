@@ -497,7 +497,7 @@ def main():
 
     #get the string TFs
     edge_signal_path = '%scrc_atac/keratinocyte_combined/keratinocyte_combined_EDGE_TABLE_signal_filtered.txt' % (projectFolder)
-    string_clustering_path = '/grail/string/string_MCL_clusters.tsv'
+    string_clustering_path = config.string_clustering_path # '/grail/string/string_MCL_clusters.tsv'
     degree_table_path = '%scrc_atac/keratinocyte_combined/keratinocyte_combined_DEGREE_TABLE_STRING_TF_signal_filtered.txt' % (projectFolder)
     degree_table_path = makeDegreeTable(edge_signal_path,string_clustering_path,normalize=True,output=degree_table_path)
 
@@ -535,7 +535,7 @@ def main():
     print(top_tf_path)
 
     #now do an additional filtering with string
-    string_interaction_path = '/grail/string/string_interactions.tsv'
+    string_interaction_path = config.string_interaction_path   #'/grail/string/string_interactions.tsv'
     string_table = utils.parseTable(string_interaction_path,'\t')
     string_tfs = utils.uniquify([line[0] for line in string_table[1:]] + [line[1] for line in string_table[1:]])
     print('identified %s string tfs with interactions' % (len(string_tfs)))
