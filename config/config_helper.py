@@ -35,8 +35,8 @@ class Config:
     Path to pipeline_dir
     '''
     @property
-    def pipeline_dir(self):
-        path = self.config.get('DEPENDENCIES', 'pipeline_dir')
+    def pipeline_folder(self):
+        path = self.config.get('DEPENDENCIES', 'pipeline_folder')
         _check_path(path)
         return path
 
@@ -44,8 +44,8 @@ class Config:
     Genome name
     '''
     @property
-    def genome(self):
-        return self.config.get('DEPENDENCIES', 'genome')
+    def genome_name(self):
+        return self.config.get('DEPENDENCIES', 'genome_name')
 
     '''
     Path to annotation file
@@ -69,8 +69,8 @@ class Config:
     Path to genome directory
     '''
     @property
-    def genome_dir(self):
-        path = self.config.get('DEPENDENCIES', 'genome_directory')
+    def genome_folder(self):
+        path = self.config.get('DEPENDENCIES', 'genome_folder')
         _check_path(path)
         return path
     '''
@@ -104,8 +104,8 @@ class Config:
     Path to dpkm_table (creates by cufflinks in step 0)
     '''
     @property
-    def fpkm_table(self):
-        path = self.config.get('DEPENDENCIES', 'fpkm_table')
+    def fpkm_table_file(self):
+        path = self.config.get('DEPENDENCIES', 'fpkm_table_file')
         _check_path(path)
         return path
 
@@ -113,8 +113,8 @@ class Config:
     Path to string_interaction_path
     '''
     @property
-    def string_interaction_path(self):
-        path = self.config.get('DEPENDENCIES', 'string_interaction_path')
+    def string_interaction_file(self):
+        path = self.config.get('DEPENDENCIES', 'string_interaction_file')
         _check_path(path)
         return path
 
@@ -122,8 +122,8 @@ class Config:
     Path to string_clustering_path
     '''
     @property
-    def string_clustering_path(self):
-        path = self.config.get('DEPENDENCIES', 'string_clustering_path')
+    def string_clustering_file(self):
+        path = self.config.get('DEPENDENCIES', 'string_clustering_file')
         _check_path(path)
         return path
 

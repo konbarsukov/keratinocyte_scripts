@@ -51,7 +51,7 @@ whereAmI = os.path.dirname(os.path.realpath(__file__))
 from config.config_helper import Config
 config = Config('./config.cfg')
 
-pipeline_dir = config.pipeline_dir
+pipeline_dir = config.pipeline_folder
 
 sys.path.append(whereAmI)
 sys.path.append(pipeline_dir)
@@ -71,7 +71,7 @@ from collections import defaultdict
 py27_path = config.py27_path
 
 projectName = config.project_name
-genome = config.genome
+genome = config.genome_name
 annotFile =  config.annotation_file
 
 #project folders
@@ -98,7 +98,7 @@ tableFolder = config.tables_folder
 maskFile = config.mask_file
 
 # genome firectory
-genomeDirectory = config.genome_dir
+genomeDirectory = config.genome_folder
 
 #making folders
 folderList = [gffFolder,macsFolder,macsEnrichedFolder,mappedEnrichedFolder,mappedFolder,wiggleFolder,metaFolder,metaRoseFolder,fastaFolder,figureCodeFolder,figuresFolder,geneListFolder,bedFolder,signalFolder,tableFolder]

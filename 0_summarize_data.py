@@ -52,7 +52,7 @@ print(whereAmI)
 from config.config_helper import Config
 config = Config('./config.cfg')
 
-pipeline_dir = config.pipeline_dir
+pipeline_dir = config.pipeline_folder
 sys.path.append(pipeline_dir)
 print(pipeline_dir)
 
@@ -71,7 +71,7 @@ from collections import defaultdict
 
 
 projectName = config.project_name
-genome = config.genome
+genome = config.genome_name
 annotFile =  config.annotation_file
 
 # project folders
@@ -99,7 +99,7 @@ genePlotFolder = config.gene_plot_folder
 maskFile = config.mask_file
 
 # genome firectory
-genomeDirectory = config.genome_dir
+genomeDirectory = config.genome_folder
 
 # gtf file
 gtfFile = config.gtf_file

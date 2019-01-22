@@ -53,7 +53,7 @@ whereAmI = os.path.dirname(os.path.realpath(__file__))
 from config.config_helper import Config
 config = Config('./config.cfg')
 
-pipeline_dir = config.pipeline_dir
+pipeline_dir = config.pipeline_folder
 
 sys.path.append(whereAmI)
 sys.path.append(pipeline_dir)
@@ -72,7 +72,7 @@ from collections import defaultdict
 
 
 projectName = config.project_name
-genome = config.genome
+genome = config.genome_name
 annotFile =  config.annotation_file
 
 
@@ -101,7 +101,7 @@ genePlotFolder = config.gene_plot_folder
 maskFile = config.mask_file
 
 # genome firectory
-genomeDirectory = config.genome_dir
+genomeDirectory = config.genome_folder
 
 #making folders
 folderList = [gffFolder,macsFolder,macsEnrichedFolder,mappedEnrichedFolder,mappedFolder,wiggleFolder,metaFolder,metaRoseFolder,fastaFolder,figureCodeFolder,figuresFolder,geneListFolder,bedFolder,signalFolder,tableFolder,genePlotFolder]
@@ -386,7 +386,7 @@ def main():
     print(mapped_path)
 
     mapped_path = '%sHG19_TSS_ALL_-1000_+1000/HG19_TSS_ALL_-1000_+1000_TSS.txt' % (mappedEnrichedFolder)
-    exp_path = config.fpkm_table
+    exp_path = config.fpkm_table_file
     activity_path = '%sHG19_KERATINOCYTE_ACTIVE.txt' % (geneListFolder)
 
     makeActiveList(mapped_path,exp_path,annotFile,activity_path)
