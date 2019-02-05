@@ -276,65 +276,6 @@ def main():
 
 
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~RUNNING MACS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-def run_macs(dataFile,useBackground=True):
-    dataDict = pipeline_dfci.loadDataTable(dataFile)
-    namesList = [name for name in dataDict.keys() if name.upper().count('WCE') ==0 and name.upper().count('INPUT') == 0]
-    namesList.sort()
-    print(namesList)
-    pipeline_dfci.callMacs(dataFile,macsFolder,namesList,False,'1e-9',useBackground)
-    os.chdir(projectFolder) # the silly call macs script has to change into the output dir
-    #so this takes us back to the project folder
-
-    #to check for completeness, we will try to find all of the peak files
-    peak_calling_done = False
-    while not peak_calling_done:
-        dataDict = pipeline_dfci.loadDataTable(dataFile)
-        namesList = [name for name in dataDict.keys() if name.upper().count('WCE') ==0 and name.upper().count('INPUT') == 0]
-        for name in namesList:
-            peak_path = '%s%s/%s_summits.bed' % (macsFolder,name,name)
-            print('searching for %s' % (peak_path))
-            if utils.checkOutput(peak_path,1,180):
-                peak_calling_done =True
-                print('found %s' % (peak_path))
-                continue
-            else:
-                print('Error: peak calling timed out')
-                sys.exit()
-
-    #now format the macs output
-    print('formatting macs output')
-    dataDict = pipeline_dfci.loadDataTable(dataFile)
-    namesList = [name for name in dataDict.keys() if name.upper().count('WCE') ==0 and name.upper().count('INPUT') == 0]
-    pipeline_dfci.formatMacsOutput(dataFile,macsFolder,macsEnrichedFolder,wiggleFolder,'',useBackground)
-    print('Finished running Macs 1.4.2')
-
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~RUN AND CHECK UTILITY~~~~~~~~~~~~~~~~~~~~~~~~~~
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#simple helper to run and check a bash script
-
-def run_bash(bash_path,output_path,maxWait=30):
-    '''
-    runs a bash script and waits up to N minutes
-    '''
-
-    if not utils.checkOutput(output_path,0,0):
-
-        print('running bash script %s' % (bash_path))
-        os.system('bash %s' % (bash_path))
-        if utils.checkOutput(output_path,1,30):
-            print('run completed, output detected for %s at %s' % (bash_path,output_path))
-    else:
-        print('found prior output for %s at %s' % (bash_path,output_path))
-
-
-
 #==========================================================================
 #==================================THE END=================================
 #==========================================================================
