@@ -1,4 +1,81 @@
 
+
+#==========================================================================
+#=============================DEPENDENCIES=================================
+#==========================================================================
+
+
+import sys, os
+# Get the script's full local path
+whereAmI = os.path.dirname(os.path.realpath(__file__))
+
+# set up config_helper
+from config.config_helper import Config
+config = Config('./config.cfg')
+
+pipeline_dir = config.pipeline_folder
+
+sys.path.append(whereAmI)
+sys.path.append(pipeline_dir)
+
+import pipeline_dfci
+import utils
+import string
+import numpy
+import os
+from scipy import stats
+import re
+from collections import defaultdict
+#==========================================================================
+#============================PARAMETERS====================================
+#==========================================================================
+
+
+
+projectName = config.project_name
+genome = config.genome_name
+annotFile =  config.annotation_file
+
+
+#project folders
+projectFolder = config.project_folder
+
+#standard folder names
+gffFolder = config.gff_folder
+macsFolder = config.macs_folder
+macsEnrichedFolder = config.macs_enriched_folder
+mappedEnrichedFolder = config.mapped_enriched_folder
+mappedFolder = config.mapped_folder
+wiggleFolder = config.wiggles_folder
+metaFolder = config.meta_folder
+metaRoseFolder = config.meta_rose_folder
+fastaFolder = config.fasta_folder
+bedFolder = config.beds_folder
+figureCodeFolder = config.figure_code_folder
+figuresFolder = config.figures_folder
+geneListFolder = config.gene_list_folder
+signalFolder = config.signal_tables_folder
+tableFolder = config.tables_folder
+genePlotFolder = config.gene_plot_folder
+
+# mask Files
+maskFile = config.mask_file
+
+# genome firectory
+genomeDirectory = config.genome_folder
+
+#making folders
+folderList = [gffFolder,macsFolder,macsEnrichedFolder,mappedEnrichedFolder,mappedFolder,wiggleFolder,metaFolder,metaRoseFolder,fastaFolder,figureCodeFolder,figuresFolder,geneListFolder,bedFolder,signalFolder,tableFolder,genePlotFolder]
+
+for folder in folderList:
+    pipeline_dfci.formatFolder(folder,True)
+
+
+py27_path = config.py27_path #'/opt/bin/python' #'/storage/cylin/anaconda3/envs/py27_anaconda/bin/python'
+
+
+
+
 #==========================================================================
 #===================SPECIFIC FUNCTIONS FOR ANALYSIS========================
 #==========================================================================
@@ -35,7 +112,6 @@ def makeActiveList(mapped_path,exp_path,annotFile,output=''):
     for i in range(1,len(mapped_table)):
         line = mapped_table[i]
         #check old
-
         if max([int(line[i]) for i in [2,3]]) and max([int(line[i]) for i in [4,5,6]]) == 1:
             old_active = True
         else:

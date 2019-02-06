@@ -58,6 +58,7 @@ pipeline_dir = config.pipeline_folder
 sys.path.append(whereAmI)
 sys.path.append(pipeline_dir)
 
+from helpers import mergeMacs14, call_crc, tf_edge_delta_out, tf_edge_delta_in, makeDegreeTable, get_tf_target_genes
 import pipeline_dfci
 import utils
 import string
@@ -67,6 +68,7 @@ from scipy import stats
 import os
 import re
 from collections import defaultdict
+#from scipy import stats
 #==========================================================================
 #============================PARAMETERS====================================
 #==========================================================================
@@ -341,18 +343,18 @@ def main():
     subpeak_path = '%sbeds/HG19_combined_atac_-0_+0.bed' % (projectFolder)
     activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
 
-    call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
+    #####call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
     #os.system('bash %scrc_atac/keratinocyte_combined_crc.sh' % (projectFolder))
-    call_crc_script = 'bash %scrc_atac/keratinocyte_combined_crc.sh' % (projectFolder)
-    proc = Popen(call_crc_script, shell=True)
+    #####call_crc_script = 'bash %scrc_atac/keratinocyte_combined_crc.sh' % (projectFolder)
+    #####proc = Popen(call_crc_script, shell=True)
 
     # wait for finishing crc
-    proc.wait()
+    #####proc.wait()
 
     # if crc script returned 1 (failed), then exit with status 1
-    if proc.returncode:
-        print 'running %s failed' % (call_crc_script)
-        sys.exit(1)
+    #####if proc.returncode:
+        #####print 'running %s failed' % (call_crc_script)
+        #####sys.exit(1)
 
     print('\n\n')
     print('#======================================================================')

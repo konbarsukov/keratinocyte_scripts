@@ -58,6 +58,7 @@ pipeline_dir = config.pipeline_folder
 sys.path.append(whereAmI)
 sys.path.append(pipeline_dir)
 
+from helpers import define_enhancer_landscape, run_bash, makeActiveList
 import pipeline_dfci
 import utils
 import string
