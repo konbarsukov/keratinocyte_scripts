@@ -128,6 +128,14 @@ class Config:
         return path
 
     '''
+    Analysis name(self, key) return analysis name by key or interrupts with exit
+    status 1
+    '''
+    def get_analysis_name(self, key):
+        name = self.__get_dict('ANALYSIS_NAMES', key)
+        return name
+
+    '''
     get_data_table(self, key) returns data_tables or interrupts program with exit
     status 1
     '''

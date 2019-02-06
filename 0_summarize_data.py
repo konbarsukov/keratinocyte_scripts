@@ -139,7 +139,7 @@ rna_dataFile = config.get_data_table('rna_table')
 def main():
 
 
-    print('main analysis for MYCN project')
+    print('main analysis for {} project'.format(projectName))
 
     print('changing directory to project folder')
     os.chdir(projectFolder)
@@ -177,11 +177,10 @@ def main():
 
     #if no processed expression present, runs cuffquant/cuffnorm/RNA-seq pipeline
     cufflinksFolder = utils.formatFolder('%scufflinks' % (projectFolder),True)
-    analysis_name = 'NIBR_YvsO'
-    young_rna_list = config.get_global_name('young_rna_list')
-    old_rna_list = config.get_global_name('old_rna_list')
-    print(old_rna_list)
-    groupList = [young_rna_list, old_rna_list]
+    analysis_name = config.get_analysis_name('cufflinks_analysis') #'NIBR_YvsO'
+    group1_rna_list = config.get_global_name('young_rna_list')
+    group2_rna_list = config.get_global_name('old_rna_list')
+    groupList = [group1_rna_list, group2_rna_list]
     bashFileName = '%s%s_rna_cufflinks.sh' % (cufflinksFolder,analysis_name)
     pipeline_dfci.makeCuffTable(rna_dataFile,analysis_name,gtfFile,cufflinksFolder,groupList,bashFileName)
 

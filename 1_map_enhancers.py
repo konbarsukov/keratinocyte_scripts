@@ -155,7 +155,7 @@ chip_list_no_input = config.get_global_name('chip_list_no_input')
 def main():
 
 
-    print('main analysis for MYCN project')
+    print('main analysis for {} project'.format(projectName))
 
     print('changing directory to project folder')
     os.chdir(projectFolder)
@@ -201,7 +201,7 @@ def main():
     # #runs only if no output detected
     # run_bash(o_enhancer_bashFileName,o_enhancer_region_map_path)
 
-    analysis_name = 'combined_h3k27ac'
+    analysis_name = config.get_analysis_name('map_enhancers_analysis')
     c_enhancer_bashFileName, c_enhancer_region_map_path = define_enhancer_landscape(projectFolder,pipeline_dir,analysis_name,chip_dataFile,names_list= k27ac_list)
 
     run_bash(c_enhancer_bashFileName, c_enhancer_region_map_path)

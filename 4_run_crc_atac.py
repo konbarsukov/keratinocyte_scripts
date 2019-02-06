@@ -68,7 +68,6 @@ from scipy import stats
 import os
 import re
 from collections import defaultdict
-#from scipy import stats
 #==========================================================================
 #============================PARAMETERS====================================
 #==========================================================================
@@ -77,6 +76,7 @@ from collections import defaultdict
 
 projectName = config.project_name
 genome = config.genome_name
+analysis_name = config.get_analysis_name('keratinocyte_combined')
 annotFile =  config.annotation_file
 
 #project folders
@@ -135,15 +135,15 @@ rna_dataFile = config.get_data_table('rna_table')
 #===========================GLOBAL NAMES LISTS=============================
 #==========================================================================
 
-y_k27ac_list = config.get_global_name('young_h3k27ac_list')
-o_k27ac_list = config.get_global_name('old_h3k27ac_list')
-k27ac_list = y_k27ac_list + o_k27ac_list
+group1_k27ac_list = config.get_global_name('young_h3k27ac_list')
+group2_k27ac_list = config.get_global_name('old_h3k27ac_list')
+k27ac_list = group1_k27ac_list + group2_k27ac_list
 
-y_brd4_list = config.get_global_name('young_brd4_list')
-o_brd4_list = config.get_global_name('old_brd4_list')
+group1_brd4_list = config.get_global_name('young_brd4_list')
+group2_brd4_list = config.get_global_name('old_brd4_list')
 
-y_atac_list = config.get_global_name('young_atac_list')
-o_atac_list = config.get_global_name('old_atac_list')
+group1_atac_list = config.get_global_name('young_atac_list')
+group2_atac_list = config.get_global_name('old_atac_list')
 
 chip_list_no_input = config.get_global_name('chip_list_no_input')
 
@@ -230,44 +230,44 @@ def main():
 
 
     #now write out some paths
-    young_bed_path = '%sHG19_young_atac_-0_+0.bed' % (bedFolder)
-    old_bed_path = '%sHG19_old_atac_-0_+0.bed' % (bedFolder)
+    group1_bed_path = '%sHG19_group1_atac_-0_+0.bed' % (bedFolder)
+    group2_bed_path = '%sHG19_group2_atac_-0_+0.bed' % (bedFolder)
 
     #combined
     combined_bed_path = '%sHG19_combined_atac_-0_+0.bed' % (bedFolder)
 
     #look for these to already exist
-    if utils.checkOutput(young_bed_path,0.1,0.1) and utils.checkOutput(old_bed_path,0.1,0.1) and utils.checkOutput(combined_bed_path,0.1,0.1):
-        print('IDENTIFIED ATAC BEDS FOR YOUNG, OLD, COMBINED:')
-        print(young_bed_path,old_bed_path,combined_bed_path)
+    if utils.checkOutput(group1_bed_path,0.1,0.1) and utils.checkOutput(group2_bed_path,0.1,0.1) and utils.checkOutput(combined_bed_path,0.1,0.1):
+        print('IDENTIFIED ATAC BEDS FOR GROUP1, GROUP2, COMBINED:')
+        print(group1_bed_path,group2_bed_path,combined_bed_path)
 
     else:
         print('MAKING ATAC PEAKS')
 
-        #for young
-        print('making young atac collection')
-        young_collection = mergeMacs14(macsEnrichedFolder,y_atac_list)
+        #for group1
+        print('making group1 atac collection')
+        group1_collection = mergeMacs14(macsEnrichedFolder,group1_atac_list)
 
-        #for old
-        print('making old atac collection')
-        old_collection = mergeMacs14(macsEnrichedFolder,o_atac_list)
+        #for group2
+        print('making group2 atac collection')
+        group2_collection = mergeMacs14(macsEnrichedFolder,group2_atac_list)
 
         #making beds
-        young_bed = utils.locusCollectionToBed(young_collection)
-        old_bed = utils.locusCollectionToBed(old_collection)
+        group1_bed = utils.locusCollectionToBed(group1_collection)
+        group2_bed = utils.locusCollectionToBed(group2_collection)
 
         #making combined collection
-        young_loci = young_collection.getLoci()
-        old_loci = old_collection.getLoci()
+        group1_loci = group1_collection.getLoci()
+        group2_loci = group2_collection.getLoci()
 
-        combined_loci = young_loci + old_loci
+        combined_loci = group1_loci + group2_loci
         combined_collection = utils.LocusCollection(combined_loci)
         stitched_collection = combined_collection.stitchCollection()
         combined_bed= utils.locusCollectionToBed(stitched_collection)
 
         #writing to disk
-        utils.unParseTable(young_bed,young_bed_path,'\t')
-        utils.unParseTable(old_bed,old_bed_path,'\t')
+        utils.unParseTable(group1_bed,group1_bed_path,'\t')
+        utils.unParseTable(group2_bed,group2_bed_path,'\t')
         utils.unParseTable(combined_bed,combined_bed_path,'\t')
 
 
@@ -338,14 +338,13 @@ def main():
 
 
     #for combined  enhancers
-    analysis_name = 'keratinocyte_combined'
+    # analysis_name = 'keratinocyte_combined'
     enhancer_path = '%smeta_rose/combined_h3k27ac/combined_h3k27ac_AllEnhancers_ENHANCER_TO_GENE.txt' % (projectFolder)
     subpeak_path = '%sbeds/HG19_combined_atac_-0_+0.bed' % (projectFolder)
     activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
 
     #####call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
-    #os.system('bash %scrc_atac/keratinocyte_combined_crc.sh' % (projectFolder))
-    #####call_crc_script = 'bash %scrc_atac/keratinocyte_combined_crc.sh' % (projectFolder)
+    #####call_crc_script = 'bash %scrc_atac/%s_crc.sh' % (projectFolder,analysis_name)
     #####proc = Popen(call_crc_script, shell=True)
 
     # wait for finishing crc
@@ -365,14 +364,14 @@ def main():
 
     #calculating delta out degree by brd4 change at edges. only take edges in the top 50%
     #at least 1 dataset
-    # crc_folder = '%scrc_atac/keratinocyte_combined' % (projectFolder)
-    # analysis_name = 'keratinocyte_combined'
-    # tf_edge_brd4_delta(crc_folder,chip_dataFile,analysis_name,y_brd4_list,o_brd4_list)
+    # crc_folder = '%scrc_atac/%s' % (projectFolder,analysis_name)
+    # analysis_name = '%s' (analysis_name)
+    # tf_edge_brd4_delta(crc_folder,chip_dataFile,analysis_name,group1_brd4_list,group2_brd4_list)
 
 
-    crc_folder = '%scrc_atac/keratinocyte_combined' % (projectFolder)
-    analysis_name = 'keratinocyte_combined'
-    tf_edge_delta_out(crc_folder,chip_dataFile,analysis_name,y_brd4_list,o_brd4_list)
+    crc_folder = '%scrc_atac/%s' % (projectFolder, analysis_name)
+    # analysis_name = '%s' % (analysis_name)
+    tf_edge_delta_out(crc_folder,chip_dataFile,analysis_name,group1_brd4_list,group2_brd4_list)
 
     print('\n\n')
     print('#======================================================================')
@@ -381,9 +380,9 @@ def main():
     print('\n\n')
 
 
-    crc_folder = '%scrc_atac/keratinocyte_combined' % (projectFolder)
-    analysis_name = 'keratinocyte_combined'
-    tf_edge_delta_in(crc_folder,chip_dataFile,analysis_name,y_brd4_list,o_brd4_list)
+    crc_folder = '%scrc_atac/%s' % (projectFolder, analysis_name)
+    # analysis_name = '%s' % (analysis_name)
+    tf_edge_delta_in(crc_folder,chip_dataFile,analysis_name,group1_brd4_list,group2_brd4_list)
 
 
     print('\n\n')
@@ -394,9 +393,9 @@ def main():
 
 
     #get the string TFs
-    edge_signal_path = '%scrc_atac/keratinocyte_combined/keratinocyte_combined_EDGE_TABLE_signal_filtered.txt' % (projectFolder)
+    edge_signal_path = '%scrc_atac/%s/%s_EDGE_TABLE_signal_filtered.txt' % (projectFolder, analysis_name, analysis_name)
     string_clustering_path = config.string_clustering_file
-    degree_table_path = '%scrc_atac/keratinocyte_combined/keratinocyte_combined_DEGREE_TABLE_STRING_TF_signal_filtered.txt' % (projectFolder)
+    degree_table_path = '%scrc_atac/%s/%s_DEGREE_TABLE_STRING_TF_signal_filtered.txt' % (projectFolder, analysis_name, analysis_name)
     degree_table_path = makeDegreeTable(edge_signal_path,string_clustering_path,normalize=True,output=degree_table_path)
 
 
@@ -406,8 +405,8 @@ def main():
     print('#======================================================================')
     print('\n\n')
 
-    crc_folder = '%scrc_atac/keratinocyte_combined/' % (projectFolder)
-    analysis_name = 'keratinocyte_combined'
+    crc_folder = '%scrc_atac/%s/' % (projectFolder, analysis_name)
+    # analysis_name = '%s' % (analysis_name)
     degree_path = '%s%s_DEGREE_TABLE.txt' % (crc_folder,analysis_name)
 
     degree_table = utils.parseTable(degree_path,'\t')
@@ -511,7 +510,7 @@ def main():
 
 
     tf_name = 'IRF2'
-    filtered_signal_path = '%scrc_atac/keratinocyte_combined/keratinocyte_combined_EDGE_TABLE_signal_filtered.txt' % (projectFolder)
+    filtered_signal_path = '%scrc_atac/%s/%s_EDGE_TABLE_signal_filtered.txt' % (projectFolder, analysis_name, analysis_name)
     get_tf_target_genes(tf_name,filtered_signal_path,cut_off = -0.5,output='')
 
 
