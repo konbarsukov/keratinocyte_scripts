@@ -76,7 +76,7 @@ from collections import defaultdict
 
 projectName = config.project_name
 genome = config.genome_name
-analysis_name = config.get_analysis_name('keratinocyte_combined')
+analysis_name = config.get_analysis_name('crc_analysis')
 annotFile =  config.annotation_file
 
 #project folders
