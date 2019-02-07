@@ -339,21 +339,22 @@ def main():
 
     #for combined  enhancers
     # analysis_name = 'keratinocyte_combined'
-    enhancer_path = '%smeta_rose/combined_h3k27ac/combined_h3k27ac_AllEnhancers_ENHANCER_TO_GENE.txt' % (projectFolder)
+    enhancers_analysis = config.get_analysis_name('map_enhancers_analysis')
+    enhancer_path = '%smeta_rose/%s/%s_AllEnhancers_ENHANCER_TO_GENE.txt' % (projectFolder, enhancers_analysis, enhancers_analysis)
     subpeak_path = '%sbeds/HG19_combined_atac_-0_+0.bed' % (projectFolder)
     activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
 
-    #####call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
-    #####call_crc_script = 'bash %scrc_atac/%s_crc.sh' % (projectFolder,analysis_name)
-    #####proc = Popen(call_crc_script, shell=True)
+    call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
+    call_crc_script = 'bash %scrc_atac/%s_crc.sh' % (projectFolder,analysis_name)
+    proc = Popen(call_crc_script, shell=True)
 
     # wait for finishing crc
-    #####proc.wait()
+    proc.wait()
 
     # if crc script returned 1 (failed), then exit with status 1
-    #####if proc.returncode:
-        #####print 'running %s failed' % (call_crc_script)
-        #####sys.exit(1)
+    if proc.returncode:
+        print 'running %s failed' % (call_crc_script)
+        sys.exit(1)
 
     print('\n\n')
     print('#======================================================================')
