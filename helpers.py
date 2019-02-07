@@ -97,7 +97,7 @@ def makeActiveList(mapped_path,exp_path,annotFile,output=''):
     '''
 
 
-    exp_table =utils.parseTable(exp_path,'\t') #BC1 = young BC=old
+    exp_table =utils.parseTable(exp_path,'\t') #BC1 = group1 BC=group2
 
     exp_dict= defaultdict(float)
     for line in exp_table[1:]:
@@ -111,18 +111,18 @@ def makeActiveList(mapped_path,exp_path,annotFile,output=''):
     active_table = []
     for i in range(1,len(mapped_table)):
         line = mapped_table[i]
-        #check old
+        #check group2
         if max([int(line[i]) for i in [2,3]]) and max([int(line[i]) for i in [4,5,6]]) == 1:
-            old_active = True
+            group2_active = True
         else:
-            old_active = False
+            group2_active = False
 
         if max([int(line[i]) for i in [7,8]]) and max([int(line[i]) for i in [9,10,11]]) == 1:
-            young_active = True
+            group1_active = True
         else:
-            young_active = False
+            group1_active = False
 
-        if old_active or young_active:
+        if group2_active or group1_active:
             chromatin_active = True
 
         gene_name = startDict[line[1]]['name']
