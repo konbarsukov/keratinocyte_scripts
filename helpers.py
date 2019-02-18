@@ -180,7 +180,7 @@ def define_enhancer_landscape(projectFolder,pipeline_dir,analysis_name,chip_data
     bashFile.write('#SBATCH --mem=16000\n\n') #set memory for slurm
     bashFile.write('cd %s\n' % (pipeline_dir))
 
-    metaRoseCmd = 'python %sROSE2_META.py -g hg19 -i %s -r %s -c %s -o %s -n %s -t 0 --mask %s' % (pipeline_dir,bedString,bamString,controlBamString,outputFolder,analysis_name,maskFile)
+    metaRoseCmd = 'python %sROSE2_META.py -g %s -i %s -r %s -c %s -o %s -n %s -t 0 --mask %s' % (pipeline_dir,genome,bedString,bamString,controlBamString,outputFolder,analysis_name,maskFile)
 
     bashFile.write(metaRoseCmd + '\n')
     bashFile.close()
@@ -436,7 +436,7 @@ def call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder):
 
     crc_path = config.crc_path
 
-    crc_cmd = '%s -e %s -g HG19 -o %s -n %s -s %s -a %s -c %s' % (crc_path ,enhancer_path,output_folder,analysis_name,subpeak_path,activity_path, config.genome_folder)
+    crc_cmd = '%s -e %s -g %s -o %s -n %s -s %s -a %s -c %s' % (crc_path ,enhancer_path,genome,output_folder,analysis_name,subpeak_path,activity_path, config.genome_folder)
     crc_bash_path = '%s%s_crc.sh' % (crc_folder,analysis_name)
 
     crc_bash = open(crc_bash_path,'w')

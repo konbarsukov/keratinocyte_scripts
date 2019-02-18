@@ -377,18 +377,18 @@ def main():
     # define active genes as FPKM > 10 in at least one sample
     # and k27ac and brd4 present at the TSS
 
-    pipeline_dfci.makeGeneGFFs(annotFile,gffFolder,'HG19')
+    pipeline_dfci.makeGeneGFFs(annotFile,gffFolder,genome)
 
-    gffList = ['%sHG19_TSS_ALL_-1000_+1000.gff' % (gffFolder)]
+    gffList = ['%s%s_TSS_ALL_-1000_+1000.gff' % (gffFolder, genome)]
     cellTypeList = ['Y','O']
 
 
     mapped_path = pipeline_dfci.mapEnrichedToGFF(chip_dataFile,'TSS',gffList,cellTypeList,macsEnrichedFolder,mappedEnrichedFolder,macs=True,namesList=chip_list_no_input,useBackground=True)
     print(mapped_path)
 
-    mapped_path = '%sHG19_TSS_ALL_-1000_+1000/HG19_TSS_ALL_-1000_+1000_TSS.txt' % (mappedEnrichedFolder)
+    mapped_path = '%s%s_TSS_ALL_-1000_+1000/%s_TSS_ALL_-1000_+1000_TSS.txt' % (mappedEnrichedFolder, genome, genome)
     exp_path = config.fpkm_table_file
-    activity_path = '%sHG19_KERATINOCYTE_ACTIVE.txt' % (geneListFolder)
+    activity_path = '%s%s_KERATINOCYTE_ACTIVE.txt' % (geneListFolder, genome)
 
     makeActiveList(mapped_path,exp_path,annotFile,activity_path)
 

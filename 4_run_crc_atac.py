@@ -230,11 +230,11 @@ def main():
 
 
     #now write out some paths
-    group1_bed_path = '%sHG19_group1_atac_-0_+0.bed' % (bedFolder)
-    group2_bed_path = '%sHG19_group2_atac_-0_+0.bed' % (bedFolder)
+    group1_bed_path = '%s%s_group1_atac_-0_+0.bed' % (bedFolder, genome)
+    group2_bed_path = '%s%s_group2_atac_-0_+0.bed' % (bedFolder, genome)
 
     #combined
-    combined_bed_path = '%sHG19_combined_atac_-0_+0.bed' % (bedFolder)
+    combined_bed_path = '%s%s_combined_atac_-0_+0.bed' % (bedFolder, genome)
 
     #look for these to already exist
     if utils.checkOutput(group1_bed_path,0.1,0.1) and utils.checkOutput(group2_bed_path,0.1,0.1) and utils.checkOutput(combined_bed_path,0.1,0.1):
@@ -282,7 +282,7 @@ def main():
     # k27ac macs enriched peak present at the promoter (+/- 1kb tss) AND by expression
     # fpkm > 10 to define an active gene
 
-    activity_path = '%sHG19_KERATINOCYTE_ACTIVE.txt' % (geneListFolder)
+    activity_path = '%s%s_KERATINOCYTE_ACTIVE.txt' % (geneListFolder, genome)
 
     if utils.checkOutput(activity_path,0.1,0.1):
         print('IDENTIFIED KERATINOCYTE ACTIVE GENE LIST AT %s' % (activity_path))
@@ -341,8 +341,8 @@ def main():
     # analysis_name = 'keratinocyte_combined'
     enhancers_analysis = config.get_analysis_name('map_enhancers_analysis')
     enhancer_path = '%smeta_rose/%s/%s_AllEnhancers_ENHANCER_TO_GENE.txt' % (projectFolder, enhancers_analysis, enhancers_analysis)
-    subpeak_path = '%sbeds/HG19_combined_atac_-0_+0.bed' % (projectFolder)
-    activity_path = '%sgeneListFolder/HG19_KERATINOCYTE_ACTIVE.txt' % (projectFolder)
+    subpeak_path = '%sbeds/%s_combined_atac_-0_+0.bed' % (projectFolder, genome)
+    activity_path = '%sgeneListFolder/%s_KERATINOCYTE_ACTIVE.txt' % (projectFolder, genome)
 
     call_crc(analysis_name,enhancer_path,subpeak_path,activity_path,crc_folder)
     call_crc_script = 'bash %scrc_atac/%s_crc.sh' % (projectFolder,analysis_name)
