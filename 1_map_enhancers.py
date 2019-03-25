@@ -380,7 +380,7 @@ def main():
     pipeline_dfci.makeGeneGFFs(annotFile,gffFolder,genome)
 
     gffList = ['%s%s_TSS_ALL_-1000_+1000.gff' % (gffFolder, genome)]
-    cellTypeList = ['Y','O']
+    cellTypeList = ['G1','G2']
 
 
     mapped_path = pipeline_dfci.mapEnrichedToGFF(chip_dataFile,'TSS',gffList,cellTypeList,macsEnrichedFolder,mappedEnrichedFolder,macs=True,namesList=chip_list_no_input,useBackground=True)
